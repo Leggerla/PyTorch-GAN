@@ -87,9 +87,13 @@ class Generator(nn.Module):
         )
 
     def forward(self, z):
+        print (z.shape)
         out = self.l1(z)
-        out = out.view(out.shape[0], 128, self.init_size)
-        img = self.conv_blocks(out)
+        print (out.shape)
+        out = out.view(out.shape[0], 128, self.init_size))
+        print (out.shape)
+        img = self.conv_blocks(out))
+        print (img.shape)
         return img
 
 class Discriminator(nn.Module):
@@ -114,9 +118,13 @@ class Discriminator(nn.Module):
         self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size ** 2, 1))
 
     def forward(self, img):
+        print (img.shape)
         out = self.model(img)
+        print (out.shape)
         out = out.view(out.shape[0], -1)
+        print (out.shape)
         validity = self.adv_layer(out)
+        print (validity.shape)
 
         return validity
 
