@@ -2,6 +2,7 @@ import argparse
 import os
 import numpy as np
 import math
+import pandas as pd
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
@@ -17,6 +18,7 @@ import torch
 os.makedirs("images", exist_ok=True)
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--data_path", type=str, default="./", help="folder with all the data")
 parser.add_argument("--n_epochs", type=int, default=200, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rate")
@@ -33,6 +35,35 @@ print(opt)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
+class StockDataset(torch.utils.data.Dataset):
+  'Characterizes a dataset for PyTorch'
+  def __init__(self, data_path):
+        'Initialization'
+        window, roll = 100, 100
+        self.base = self.rolling_periods(pd.read_csv('base.csv'), window, roll)
+        self.associate = self.rolling_periods(pd.read_csv('associate.csv'), window, roll)
+
+  def __len__(self):
+        'Denotes the total number of samples'
+        return len(self.base)
+
+  def __getitem__(self, index):
+        'Generates one sample of data'
+        # Get vector and label
+        X = self.base[index, :]
+        y = self.associate[index, :]
+
+        return X, y
+    
+  def rolling_periods(self, df, window, roll):
+      res = []
+      enum = len(df.index)
+      for i in np.arange(enum, step=window):
+        if enum - i < window:
+          break
+        res.append(torch.tensor(df.iloc[i:i+roll].values))
+      return torch.stack(res)
 
 class Generator(nn.Module):
     def __init__(self):
@@ -99,16 +130,9 @@ generator = Generator().to(device)
 discriminator = Discriminator().to(device)
 
 # Configure data loader
-os.makedirs("../../data/mnist", exist_ok=True)
+dataset = StockDataset(opt.data_path)
 dataloader = torch.utils.data.DataLoader(
-    datasets.MNIST(
-        "../../data/mnist",
-        train=True,
-        download=True,
-        transform=transforms.Compose(
-            [transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
-        ),
-    ),
+    datsaet,
     batch_size=opt.batch_size,
     shuffle=True,
 )
