@@ -69,7 +69,7 @@ class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
 
-        self.init_size = opt.vector_size // 4
+        self.init_size = opt.vector_size
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 128 * self.init_size ** 2))
 
         self.conv_blocks = nn.Sequential(
@@ -88,7 +88,7 @@ class Generator(nn.Module):
 
     def forward(self, z):
         out = self.l1(z)
-        out = out.view(out.shape[0], 128, self.init_size, self.init_size)
+        out = out.view(out.shape[0], 1, self.init_size)
         img = self.conv_blocks(out)
         return img
 
