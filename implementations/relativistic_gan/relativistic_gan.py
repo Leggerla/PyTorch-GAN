@@ -42,16 +42,16 @@ class Generator(nn.Module):
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 128 * self.init_size ** 2))
 
         self.conv_blocks = nn.Sequential(
-            nn.BatchNorm2d(128),
+            nn.BatchNorm1d(128),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 128, 3, stride=1, padding=1),
-            nn.BatchNorm2d(128, 0.8),
+            nn.Conv1d(128, 128, 3, stride=1, padding=1),
+            nn.BatchNorm1d(128, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 64, 3, stride=1, padding=1),
-            nn.BatchNorm2d(64, 0.8),
+            nn.Conv1d(128, 64, 3, stride=1, padding=1),
+            nn.BatchNorm1d(64, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
+            nn.Conv1d(64, opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
 
@@ -67,9 +67,9 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):
-            block = [nn.Conv2d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout2d(0.25)]
+            block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout1d(0.25)]
             if bn:
-                block.append(nn.BatchNorm2d(out_filters, 0.8))
+                block.append(nn.BatchNorm1d(out_filters, 0.8))
             return block
 
         self.model = nn.Sequential(
