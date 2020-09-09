@@ -41,8 +41,8 @@ class StockDataset(torch.utils.data.Dataset):
   def __init__(self, data_path):
         'Initialization'
         window, roll = 100, 100
-        self.base = self.rolling_periods(pd.read_csv('base.csv'), window, roll)
-        self.associate = self.rolling_periods(pd.read_csv('associate.csv'), window, roll)
+        self.base = self.rolling_periods(pd.read_csv(data_path+'base.csv'), window, roll)
+        self.associate = self.rolling_periods(pd.read_csv(data_path+'associate.csv'), window, roll)
 
   def __len__(self):
         'Denotes the total number of samples'
