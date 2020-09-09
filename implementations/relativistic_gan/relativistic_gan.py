@@ -92,13 +92,12 @@ class Generator(nn.Module):
         img = self.conv_blocks(out)
         return img
 
-
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):
-            block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout1d(0.25)]
+            block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout(0.25)]
             if bn:
                 block.append(nn.BatchNorm1d(out_filters, 0.8))
             return block
