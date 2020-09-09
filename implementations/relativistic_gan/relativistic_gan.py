@@ -90,9 +90,9 @@ class Generator(nn.Module):
         print (z.shape)
         out = self.l1(z)
         print (out.shape)
-        out = out.view(out.shape[0], 128, self.init_size))
+        out = out.view(out.shape[0], 128, self.init_size)
         print (out.shape)
-        img = self.conv_blocks(out))
+        img = self.conv_blocks(out)
         print (img.shape)
         return img
 
