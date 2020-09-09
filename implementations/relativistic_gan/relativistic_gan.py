@@ -131,7 +131,7 @@ discriminator = Discriminator().to(device)
 # Configure data loader
 dataset = StockDataset(opt.data_path)
 dataloader = torch.utils.data.DataLoader(
-    datsaet,
+    dataset,
     batch_size=opt.batch_size,
     shuffle=True,
 )
