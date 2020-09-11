@@ -40,7 +40,7 @@ class StockDataset(torch.utils.data.Dataset):
   'Characterizes a dataset for PyTorch'
   def __init__(self, data_path):
         'Initialization'
-        window, roll = 100, 100
+        window, roll = 128, 128
         self.base = self.rolling_periods(pd.read_csv(data_path+'base.csv'), window, roll)
         self.associate = self.rolling_periods(pd.read_csv(data_path+'associate.csv'), window, roll)
 
@@ -62,7 +62,7 @@ class StockDataset(torch.utils.data.Dataset):
       for i in np.arange(enum, step=window):
         if enum - i < window:
           break
-        res.append(torch.tensor(df.iloc[i:i+roll].values))
+        res.append(torch.tensor(df.iloc[i:i+roll].values[:, 1]))
       return torch.stack(res)
 
 class Generator(nn.Module):
@@ -87,13 +87,10 @@ class Generator(nn.Module):
         )
 
     def forward(self, z):
-        print (z.shape)
+        print ('Generator')
         out = self.l1(z)
-        print (out.shape)
         out = out.view(out.shape[0], 128, self.init_size)
-        print (out.shape)
         img = self.conv_blocks(out)
-        print (img.shape)
         return img
 
 class Discriminator(nn.Module):
@@ -101,7 +98,7 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):
-            block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout(0.25)]
+            block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout(0.25)] #stride=2 todo
             if bn:
                 block.append(nn.BatchNorm1d(out_filters, 0.8))
             return block
@@ -115,16 +112,14 @@ class Discriminator(nn.Module):
 
         # The height and width of downsampled image
         ds_size = opt.vector_size // 2 ** 4
-        self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size ** 2, 1))
+        print (ds_size, 128 * ds_size)
+        self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size, 1))
 
     def forward(self, img):
-        print (img.shape)
+        print ('Discriminator')
         out = self.model(img)
-        print (out.shape)
         out = out.view(out.shape[0], -1)
-        print (out.shape)
         validity = self.adv_layer(out)
-        print (validity.shape)
 
         return validity
 
@@ -175,7 +170,6 @@ for epoch in range(opt.n_epochs):
 
         # Generate a batch of images
         gen_imgs = generator(z)
-        print (gen_imgs.shape)
 
         real_pred = discriminator(real_imgs).detach()
         fake_pred = discriminator(gen_imgs)
