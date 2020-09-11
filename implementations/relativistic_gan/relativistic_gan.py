@@ -146,10 +146,12 @@ Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTen
 # ----------
 #  Training
 # ----------
-d_losses = torch.zeros(opt.n_epochs)
+d_real_losses = torch.zeros(opt.n_epochs)
+d_fake_losses = torch.zeros(opt.n_epochs)
 g_losses = torch.zeros(opt.n_epochs)
 for epoch in range(opt.n_epochs):
-    sum_d_loss = []
+    sum_d_real_loss = []
+    sum_d_fake_loss = []
     sum_g_loss = []
     for i, (imgs, _) in enumerate(dataloader):
 
@@ -213,15 +215,18 @@ for epoch in range(opt.n_epochs):
             "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
             % (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
         )
-        sum_d_loss.append(d_loss.item())
+        sum_d_real_loss.append(real_loss.item())
+        sum_d_fake_loss.append(fake_loss.item())
         sum_g_loss.append(g_loss.item())
 
         batches_done = epoch * len(dataloader) + i
         if batches_done % opt.sample_interval == 0:
             torch.save(gen_imgs.data, "charts/%d.pt" % batches_done)
             
-    d_losses[epoch] = torch.mean(torch.tensor(sum_d_loss))
+    d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
+    d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
     g_losses[epoch] = torch.mean(torch.tensor(sum_g_loss))
 
-torch.save(d_losses, 'd_losses.pt')
+torch.save(d_real_losses, 'd_real_losses.pt')
+torch.save(d_fake_losses, 'd_fake_losses.pt')
 torch.save(g_losses, 'g_losses.pt')
