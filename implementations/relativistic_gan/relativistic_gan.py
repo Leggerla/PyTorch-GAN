@@ -87,7 +87,6 @@ class Generator(nn.Module):
         )
 
     def forward(self, z):
-        print ('Generator')
         out = self.l1(z)
         out = out.view(out.shape[0], 128, self.init_size)
         img = self.conv_blocks(out)
@@ -116,7 +115,6 @@ class Discriminator(nn.Module):
         self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size, 1))
 
     def forward(self, img):
-        print ('Discriminator')
         out = self.model(img)
         out = out.view(out.shape[0], -1)
         validity = self.adv_layer(out)
@@ -148,8 +146,11 @@ Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTen
 # ----------
 #  Training
 # ----------
-
+d_losses = torch.zeros(opt.n_epochs)
+g_losses = torch.zeros(opt.n_epochs)
 for epoch in range(opt.n_epochs):
+    sum_d_loss = []
+    sum_g_loss = []
     for i, (imgs, _) in enumerate(dataloader):
 
         # Adversarial ground truths
@@ -212,7 +213,12 @@ for epoch in range(opt.n_epochs):
             "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
             % (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
         )
+        sum_d_loss.append(d_loss.item())
+        sum_g_loss.append(g_loss.item())
 
         batches_done = epoch * len(dataloader) + i
         if batches_done % opt.sample_interval == 0:
             save_image(gen_imgs.data[:25], "images/%d.png" % batches_done, nrow=5, normalize=True)
+            
+    d_losses[epoch] = torch.mean(sum_d_loss)
+    g_losses[epoch] = torch.mean(sum_g_loss)
