@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 
-os.makedirs("images", exist_ok=True)
+os.makedirs("charts", exist_ok=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--data_path", type=str, default="./", help="folder with all the data")
@@ -218,7 +218,7 @@ for epoch in range(opt.n_epochs):
 
         batches_done = epoch * len(dataloader) + i
         if batches_done % opt.sample_interval == 0:
-            save_image(gen_imgs.data[:25], "images/%d.png" % batches_done, nrow=5, normalize=True)
+            torch.save(gen_imgs.data, "charts/%d.pt" % batches_done)
             
     d_losses[epoch] = torch.mean(torch.tensor(sum_d_loss))
     g_losses[epoch] = torch.mean(torch.tensor(sum_g_loss))
