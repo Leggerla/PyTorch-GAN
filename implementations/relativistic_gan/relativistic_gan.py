@@ -220,5 +220,8 @@ for epoch in range(opt.n_epochs):
         if batches_done % opt.sample_interval == 0:
             save_image(gen_imgs.data[:25], "images/%d.png" % batches_done, nrow=5, normalize=True)
             
-    d_losses[epoch] = torch.mean(sum_d_loss)
-    g_losses[epoch] = torch.mean(sum_g_loss)
+    d_losses[epoch] = torch.mean(torch.tensor(sum_d_loss))
+    g_losses[epoch] = torch.mean(torch.tensor(sum_g_loss))
+
+torch.save(d_losses, 'd_losses.pt')
+torch.save(g_losses, 'g_losses.pt')
