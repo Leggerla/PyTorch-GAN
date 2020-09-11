@@ -157,7 +157,8 @@ for epoch in range(opt.n_epochs):
         fake = Variable(Tensor(imgs.shape[0], 1).fill_(0.0), requires_grad=False)
 
         # Configure input
-        real_imgs = Variable(imgs.type(Tensor))[:, :, None]
+        print ('Original', imgs.shape)
+        real_imgs = Variable(imgs.type(Tensor))[:, None, :]
 
         # -----------------
         #  Train Generator
@@ -180,7 +181,6 @@ for epoch in range(opt.n_epochs):
             g_loss = adversarial_loss(fake_pred - real_pred, valid)
 
         # Loss measures generator's ability to fool the discriminator
-        print (gen_imgs.shape)
         g_loss = adversarial_loss(discriminator(gen_imgs), valid)
 
         g_loss.backward()
