@@ -221,7 +221,7 @@ for epoch in range(opt.n_epochs):
         sum_d_fake_loss.append(fake_loss.item())
         sum_g_loss.append(g_loss.item())
 
-        autocorr = torch.sum(autocorrelation(gen_imgs, dim=1))
+        autocorr = torch.mean(autocorrelation(gen_imgs, dim=1))
         if autocorr > best_autocorrelation:
           print (autocorr)
           batches_done = epoch * len(dataloader) + i
