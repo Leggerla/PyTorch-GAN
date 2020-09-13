@@ -84,7 +84,7 @@ class Generator(nn.Module):
             nn.BatchNorm1d(64, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv1d(64, opt.channels, 3, stride=1, padding=1),
-            nn.Tanh(),
+            nn.ReLU(),
         )
 
     def forward(self, z):
