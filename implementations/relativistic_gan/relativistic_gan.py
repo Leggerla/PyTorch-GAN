@@ -152,6 +152,7 @@ d_real_losses = torch.zeros(opt.n_epochs)
 d_fake_losses = torch.zeros(opt.n_epochs)
 g_losses = torch.zeros(opt.n_epochs)
 best_autocorrelation = -float('inf')
+best_similarity = -float('inf')
 for epoch in range(opt.n_epochs):
     sum_d_real_loss = []
     sum_d_fake_loss = []
@@ -231,6 +232,13 @@ for epoch in range(opt.n_epochs):
           torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
           torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
           torch.save(matrix_autocorr, "charts/autocorr_%d.pt" % batches_done)
+       
+       similarity = torch.sum(torch.mul(real_imgs.data, gen_imgs.data))
+       if similarity > best_similarity:
+          best_similarity = similarity
+          torch.save(real_imgs.data, "charts/similarity_real_%d.pt" % batches_done)
+          torch.save(gen_imgs.data, "charts/similarity_gen_%d.pt" % batches_done)
+          
             
     d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
     d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
