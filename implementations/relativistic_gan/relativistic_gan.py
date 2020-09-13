@@ -221,7 +221,8 @@ for epoch in range(opt.n_epochs):
 
         batches_done = epoch * len(dataloader) + i
         if batches_done % opt.sample_interval == 0:
-            torch.save(gen_imgs.data, "charts/%d.pt" % batches_done)
+            torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
+            torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
             
     d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
     d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
