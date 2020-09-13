@@ -238,7 +238,6 @@ for epoch in range(opt.n_epochs):
           best_similarity = similarity
           torch.save(real_imgs.data, "charts/similarity_real_%d.pt" % batches_done)
           torch.save(gen_imgs.data, "charts/similarity_gen_%d.pt" % batches_done)
-          
             
     d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
     d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
