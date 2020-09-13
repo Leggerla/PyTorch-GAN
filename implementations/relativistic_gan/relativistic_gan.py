@@ -6,6 +6,7 @@ import pandas as pd
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
+from pytorch_forecasting.utils import autocorrelation
 
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -149,6 +150,7 @@ Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTen
 d_real_losses = torch.zeros(opt.n_epochs)
 d_fake_losses = torch.zeros(opt.n_epochs)
 g_losses = torch.zeros(opt.n_epochs)
+best_autocorrelation = -1
 for epoch in range(opt.n_epochs):
     sum_d_real_loss = []
     sum_d_fake_loss = []
@@ -219,10 +221,11 @@ for epoch in range(opt.n_epochs):
         sum_d_fake_loss.append(fake_loss.item())
         sum_g_loss.append(g_loss.item())
 
-        batches_done = epoch * len(dataloader) + i
-        if batches_done % opt.sample_interval == 0:
-            torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
-            torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
+        autocorrelation = torch.sum(autocorrelation(gen_imgs, dim=1))
+        if autocorrelation > best_autocorrelation:
+          batches_done = epoch * len(dataloader) + i
+          torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
+          torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
             
     d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
     d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
