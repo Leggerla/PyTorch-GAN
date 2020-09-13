@@ -222,7 +222,7 @@ for epoch in range(opt.n_epochs):
         sum_g_loss.append(g_loss.item())
 
         autocorr = torch.mean(autocorrelation(gen_imgs.data, dim=1))
-        print (autocorr)
+        print (gen_imgs.data)
         print (torch.mean(autocorrelation(gen_imgs.data, dim=0)))
         if autocorr > best_autocorrelation:
           print (autocorr)
