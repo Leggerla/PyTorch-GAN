@@ -232,7 +232,7 @@ for epoch in range(opt.n_epochs):
           torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
           torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
           torch.save(matrix_autocorr, "charts/autocorr_%d.pt" % batches_done)
-       
+          
        similarity = torch.sum(torch.mul(real_imgs.data, gen_imgs.data))
        if similarity > best_similarity:
           best_similarity = similarity
