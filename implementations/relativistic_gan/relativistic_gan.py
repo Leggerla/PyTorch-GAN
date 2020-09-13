@@ -237,15 +237,15 @@ for epoch in range(opt.n_epochs):
 			torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
 			torch.save(matrix_autocorr, "charts/autocorr_%d.pt" % batches_done)
 
-	similarity = torch.sum(torch.mul(real_imgs.data, gen_imgs.data))
-	if similarity > best_similarity:
-		best_similarity = similarity
-		torch.save(real_imgs.data, "charts/similarity_real_%d.pt" % batches_done)
-		torch.save(gen_imgs.data, "charts/similarity_gen_%d.pt" % batches_done)
+		similarity = torch.sum(torch.mul(real_imgs.data, gen_imgs.data))
+		if similarity > best_similarity:
+			best_similarity = similarity
+			torch.save(real_imgs.data, "charts/similarity_real_%d.pt" % batches_done)
+			torch.save(gen_imgs.data, "charts/similarity_gen_%d.pt" % batches_done)
 
-d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
-d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
-g_losses[epoch] = torch.mean(torch.tensor(sum_g_loss))
+	d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
+	d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
+	g_losses[epoch] = torch.mean(torch.tensor(sum_g_loss))
 
 torch.save(d_real_losses, 'd_real_losses.pt')
 torch.save(d_fake_losses, 'd_fake_losses.pt')
