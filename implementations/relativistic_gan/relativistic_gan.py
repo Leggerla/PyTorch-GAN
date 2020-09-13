@@ -223,7 +223,6 @@ for epoch in range(opt.n_epochs):
 
         autocorr = torch.mean(autocorrelation(gen_imgs.data[:, 0, :], dim=1))
         if autocorr > best_autocorrelation:
-          print (autocorrelation(gen_imgs.data[:, 0, :], dim=1))
           print ('Autocorrelation', autocorr)
           batches_done = epoch * len(dataloader) + i
           torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
