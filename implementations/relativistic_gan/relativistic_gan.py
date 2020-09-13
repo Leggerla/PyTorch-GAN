@@ -222,10 +222,9 @@ for epoch in range(opt.n_epochs):
         sum_g_loss.append(g_loss.item())
 
         autocorr = torch.mean(autocorrelation(gen_imgs.data[:, 0, :], dim=1))
-        print (gen_imgs.data[:, 0, :])
-        print (torch.mean(autocorrelation(gen_imgs.data[:, 0, :], dim=0)))
         if autocorr > best_autocorrelation:
-          print (autocorr)
+          print (autocorrelation(gen_imgs.data[:, 0, :], dim=1))
+          print ('Autocorrelation', autocorr)
           batches_done = epoch * len(dataloader) + i
           torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
           torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
