@@ -233,15 +233,15 @@ for epoch in range(opt.n_epochs):
 			best_autocorrelation = autocorr.item()
 			print('Autocorrelation', best_autocorrelation)
 			batches_done = epoch * len(dataloader) + i
-			torch.save(real_associate.data, "charts/real_%d.pt" % batches_done)
-			torch.save(gen_associate.data, "charts/gen_%d.pt" % batches_done)
-			torch.save(matrix_autocorr, "charts/autocorr_%d.pt" % batches_done)
+			torch.save(real_associate.data, "charts/real.pt")
+			torch.save(gen_associate.data, "charts/gen.pt")
+			torch.save(matrix_autocorr, "charts/autocorr.pt")
 
 		similarity = torch.sum(torch.mul(real_associate.data, gen_associate.data))
 		if similarity > best_similarity:
 			best_similarity = similarity
-			torch.save(real_associate.data, "charts/similarity_real_%d.pt" % batches_done)
-			torch.save(gen_associate.data, "charts/similarity_gen_%d.pt" % batches_done)
+			torch.save(real_associate.data, "charts/similarity_real.pt")
+			torch.save(gen_associate.data, "charts/similarity_gen.pt")
 
 	d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
 	d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
