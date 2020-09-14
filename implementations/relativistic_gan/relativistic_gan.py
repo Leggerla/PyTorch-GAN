@@ -228,6 +228,10 @@ for epoch in range(opt.n_epochs):
 		sum_g_loss.append(g_loss.item())
 
 		matrix_autocorr = autocorrelation(gen_associate.data[:, 0, :], dim=0)
+		print (matrix_autocorr)
+		print (autocorrelation(gen_associate.data[0, 0, :]))
+		print (autocorrelation(gen_associate.data[1, 0, :]))
+		print (autocorrelation(gen_associate.data[:, 0, :], dim=1))
 		autocorr = torch.mean(matrix_autocorr)
 		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
