@@ -93,6 +93,7 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, z):
+		print (z.shape)
 		out = self.l1(z.double())
 		out = out.view(out.shape[0], 128, self.init_size)
 		img = self.conv_blocks(out)
