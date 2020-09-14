@@ -48,7 +48,7 @@ class StockDataset(torch.utils.data.Dataset):
 
 	def __len__(self):
 		'Denotes the total number of samples'
-		return len(self.base)
+		return self.base.shape[0]
 
 	def __getitem__(self, index):
 		'Generates one sample of data'
