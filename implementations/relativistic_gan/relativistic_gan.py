@@ -137,6 +137,7 @@ adversarial_loss = torch.nn.BCEWithLogitsLoss().to(device)
 # Initialize generator and discriminator
 generator = Generator().double().to(device)
 discriminator = Discriminator().double().to(device)
+print (torch.backends.cudnn.enabled)
 
 # Configure data loader
 dataset = StockDataset(opt.data_path)
