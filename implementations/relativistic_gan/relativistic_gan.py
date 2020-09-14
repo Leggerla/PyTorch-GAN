@@ -95,6 +95,7 @@ class Generator(nn.Module):
 	def forward(self, z):
 		out = self.l1(z)
 		out = out.view(out.shape[0], 128, self.init_size)
+		print (out)
 		img = self.conv_blocks(out)
 		return img
 
@@ -162,8 +163,6 @@ for epoch in range(opt.n_epochs):
 	sum_d_fake_loss = []
 	sum_g_loss = []
 	for i, (base, associate) in enumerate(dataloader):
-		
-		print (base, associate)
 
 		# Adversarial ground truths
 		valid = Variable(Tensor(associate.shape[0], 1).fill_(1.0), requires_grad=False)
