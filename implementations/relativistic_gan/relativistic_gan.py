@@ -58,7 +58,7 @@ class StockDataset(torch.utils.data.Dataset):
 
 		return X, y
 
-	def rolling_periods(df, window, roll):
+	def rolling_periods(self, df, window, roll):
 	  res = []
 	  array = torch.tensor(df.values)
 	  max = torch.max(array)
