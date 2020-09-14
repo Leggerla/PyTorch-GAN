@@ -6,7 +6,7 @@ import pandas as pd
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
-from pytorch_forecasting.utils import autocorrelation
+from scipy.signal import correlate
 
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -39,7 +39,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def correlation(gen):
   coor = []
   for i in range(gen.shape[0]):
-    coor.append(torch.from_numpy(np.correlate(gen[i, :].cpu(), gen[i, :].cpu(), 'full')))
+    coor.append(torch.from_numpy(correlate(gen[i, :].cpu(), gen[i, :].cpu(), 'full')/gen.shape[-1]))
   return torch.stack(coor)
 
 class StockDataset(torch.utils.data.Dataset):
