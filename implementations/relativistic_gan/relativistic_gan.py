@@ -61,8 +61,8 @@ class StockDataset(torch.utils.data.Dataset):
 	def rolling_periods(self, df, window, roll):
 		res = []
 		enum = len(df.index)
-		max = torch.max(df.values[:, 1])
-		min = torch.max(df.values[:, 1])
+		max = np.max(df.values[:, 1])
+		min = np.max(df.values[:, 1])
 		for i in np.arange(enum, step=window):
 			if enum - i < window:
 				break
