@@ -76,7 +76,7 @@ class Generator(nn.Module):
 		super(Generator, self).__init__()
 
 		self.init_size = opt.vector_size // 4
-		self.l1 = nn.Sequential(nn.Linear(opt.vector_size, 128 * self.init_size))
+		self.l1 = nn.Sequential(nn.Linear(opt.vector_size, 128 * self.init_size)).double()
 
 		self.conv_blocks = nn.Sequential(
 			nn.BatchNorm1d(128),
