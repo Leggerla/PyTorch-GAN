@@ -95,7 +95,9 @@ class Generator(nn.Module):
 	def forward(self, z):
 		print (z.shape)
 		out = self.l1(z.double())
+		print (out.shape)
 		out = out.view(out.shape[0], 128, self.init_size)
+		print (out.shape)
 		img = self.conv_blocks(out)
 		return img
 
@@ -137,7 +139,6 @@ adversarial_loss = torch.nn.BCEWithLogitsLoss().to(device)
 # Initialize generator and discriminator
 generator = Generator().double().to(device)
 discriminator = Discriminator().double().to(device)
-print (torch.backends.cudnn.enabled)
 
 # Configure data loader
 dataset = StockDataset(opt.data_path)
@@ -166,8 +167,6 @@ for epoch in range(opt.n_epochs):
 	sum_d_fake_loss = []
 	sum_g_loss = []
 	for i, (base, associate) in enumerate(dataloader):
-		
-		print (base.shape, associate.shape)
 
 		# Adversarial ground truths
 		valid = Variable(Tensor(associate.shape[0], 1).fill_(1.0), requires_grad=False)
