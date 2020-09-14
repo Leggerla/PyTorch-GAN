@@ -134,8 +134,8 @@ class Discriminator(nn.Module):
 adversarial_loss = torch.nn.BCEWithLogitsLoss().to(device)
 
 # Initialize generator and discriminator
-generator = Generator().double().to(device)
-discriminator = Discriminator().double().to(device)
+generator = Generator().to(device)
+discriminator = Discriminator().to(device)
 
 # Configure data loader
 dataset = StockDataset(opt.data_path)
@@ -164,13 +164,15 @@ for epoch in range(opt.n_epochs):
 	sum_d_fake_loss = []
 	sum_g_loss = []
 	for i, (base, associate) in enumerate(dataloader):
+		
+		print (base.shape, associate.shape)
 
 		# Adversarial ground truths
 		valid = Variable(Tensor(associate.shape[0], 1).fill_(1.0), requires_grad=False)
 		fake = Variable(Tensor(associate.shape[0], 1).fill_(0.0), requires_grad=False)
 
 		# Configure input
-		real_imgs = Variable(associate.type(Tensor))[:, None, :]
+		real_associate = Variable(associate.type(Tensor))[:, None, :]
 
 		# -----------------
 		#  Train Generator
