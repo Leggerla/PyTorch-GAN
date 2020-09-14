@@ -43,8 +43,8 @@ class StockDataset(torch.utils.data.Dataset):
 	def __init__(self, data_path):
 		'Initialization'
 		window, roll = 96, 96
-		self.base = self.rolling_periods(pd.read_csv(data_path + 'base.csv'), window, roll)
-		self.associate = self.rolling_periods(pd.read_csv(data_path + 'associate.csv'), window, roll)
+		self.base = self.rolling_periods(pd.read_csv(data_path + 'base.csv', usecols=[1]), window, roll)
+		self.associate = self.rolling_periods(pd.read_csv(data_path + 'associate.csv', usecols=[1]), window, roll)
 
 	def __len__(self):
 		'Denotes the total number of samples'
@@ -58,16 +58,17 @@ class StockDataset(torch.utils.data.Dataset):
 
 		return X, y
 
-	def rolling_periods(self, df, window, roll):
-		res = []
-		enum = len(df.index)
-		max = np.max(df.values[:, 1])
-		min = np.max(df.values[:, 1])
-		for i in np.arange(enum, step=window):
-			if enum - i < window:
-				break
-			res.append(torch.tensor(df.iloc[i:i + roll].values[:, 1]))
-		return (torch.stack(res)-min+1e-8)/(max-min+1e-8)
+	def rolling_periods(df, window, roll):
+	  res = []
+	  array = torch.tensor(df.values)
+	  max = torch.max(array)
+	  min = torch.min(array)
+	  enum = array.shape[0]
+	  for i in torch.arange(0, enum, step=window):
+	    if enum - i < window:
+	      break
+	    res.append(array[i:i + roll])
+	  return (torch.stack(res)-min+1e-8)/(max-min+1e-8)
 
 
 class Generator(nn.Module):
