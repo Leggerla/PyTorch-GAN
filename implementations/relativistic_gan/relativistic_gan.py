@@ -93,11 +93,8 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, z):
-		print (z.shape)
-		out = self.l1(z.double())
-		print (out.shape)
+		out = self.l1(z)
 		out = out.view(out.shape[0], 128, self.init_size)
-		print (out.shape)
 		img = self.conv_blocks(out)
 		return img
 
@@ -122,14 +119,12 @@ class Discriminator(nn.Module):
 
 		# The height and width of downsampled image
 		ds_size = opt.vector_size // 2 ** 4
-		print(ds_size, 128 * ds_size)
 		self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size, 1))
 
 	def forward(self, img):
 		out = self.model(img)
 		out = out.view(out.shape[0], -1)
 		validity = self.adv_layer(out)
-
 		return validity
 
 
@@ -137,8 +132,8 @@ class Discriminator(nn.Module):
 adversarial_loss = torch.nn.BCEWithLogitsLoss().to(device)
 
 # Initialize generator and discriminator
-generator = Generator().double().to(device)
-discriminator = Discriminator().double().to(device)
+generator = Generator().to(device)
+discriminator = Discriminator().to(device)
 
 # Configure data loader
 dataset = StockDataset(opt.data_path)
@@ -167,6 +162,8 @@ for epoch in range(opt.n_epochs):
 	sum_d_fake_loss = []
 	sum_g_loss = []
 	for i, (base, associate) in enumerate(dataloader):
+		
+		print (base, associate)
 
 		# Adversarial ground truths
 		valid = Variable(Tensor(associate.shape[0], 1).fill_(1.0), requires_grad=False)
