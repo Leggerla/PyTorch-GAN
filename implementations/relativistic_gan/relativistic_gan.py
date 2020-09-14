@@ -93,8 +93,10 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, z):
+		print (z.shape)
 		print (z)
 		out = self.l1(z)
+		print (out.shape)
 		print (out)
 		out = out.view(out.shape[0], 128, self.init_size)
 		print (out)
