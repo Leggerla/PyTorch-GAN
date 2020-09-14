@@ -76,7 +76,7 @@ class Generator(nn.Module):
 		super(Generator, self).__init__()
 
 		self.init_size = opt.vector_size // 4
-		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 128 * self.init_size))
+		self.l1 = nn.Sequential(nn.Linear(opt.vector_size, 128 * self.init_size))
 
 		self.conv_blocks = nn.Sequential(
 			nn.BatchNorm1d(128),
@@ -163,14 +163,14 @@ for epoch in range(opt.n_epochs):
 	sum_d_real_loss = []
 	sum_d_fake_loss = []
 	sum_g_loss = []
-	for i, (imgs, _) in enumerate(dataloader):
+	for i, (base, associate) in enumerate(dataloader):
 
 		# Adversarial ground truths
-		valid = Variable(Tensor(imgs.shape[0], 1).fill_(1.0), requires_grad=False)
-		fake = Variable(Tensor(imgs.shape[0], 1).fill_(0.0), requires_grad=False)
+		valid = Variable(Tensor(associate.shape[0], 1).fill_(1.0), requires_grad=False)
+		fake = Variable(Tensor(associate.shape[0], 1).fill_(0.0), requires_grad=False)
 
 		# Configure input
-		real_imgs = Variable(imgs.type(Tensor))[:, None, :]
+		real_imgs = Variable(associate.type(Tensor))[:, None, :]
 
 		# -----------------
 		#  Train Generator
@@ -178,14 +178,14 @@ for epoch in range(opt.n_epochs):
 
 		optimizer_G.zero_grad()
 
-		# Sample noise as generator input
-		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
+		## Sample noise as generator input
+		#z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 
 		# Generate a batch of images
-		gen_imgs = generator(z)
+		gen_associate = generator(base)
 
-		real_pred = discriminator(real_imgs).detach()
-		fake_pred = discriminator(gen_imgs)
+		real_pred = discriminator(real_associate).detach()
+		fake_pred = discriminator(gen_associate)
 
 		if opt.rel_avg_gan:
 			g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
@@ -193,7 +193,7 @@ for epoch in range(opt.n_epochs):
 			g_loss = adversarial_loss(fake_pred - real_pred, valid)
 
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_imgs), valid)
+		g_loss = adversarial_loss(discriminator(gen_associate), valid)
 
 		g_loss.backward()
 		optimizer_G.step()
@@ -205,8 +205,8 @@ for epoch in range(opt.n_epochs):
 		optimizer_D.zero_grad()
 
 		# Predict validity
-		real_pred = discriminator(real_imgs)
-		fake_pred = discriminator(gen_imgs.detach())
+		real_pred = discriminator(real_associate)
+		fake_pred = discriminator(gen_associate.detach())
 
 		if opt.rel_avg_gan:
 			real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
@@ -228,21 +228,21 @@ for epoch in range(opt.n_epochs):
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 
-		matrix_autocorr = autocorrelation(gen_imgs.data[:, 0, :], dim=1)
+		matrix_autocorr = autocorrelation(gen_associate.data[:, 0, :], dim=1)
 		autocorr = torch.mean(matrix_autocorr)
 		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
 			print('Autocorrelation', best_autocorrelation)
 			batches_done = epoch * len(dataloader) + i
-			torch.save(real_imgs.data, "charts/real_%d.pt" % batches_done)
-			torch.save(gen_imgs.data, "charts/gen_%d.pt" % batches_done)
+			torch.save(real_associate.data, "charts/real_%d.pt" % batches_done)
+			torch.save(gen_associate.data, "charts/gen_%d.pt" % batches_done)
 			torch.save(matrix_autocorr, "charts/autocorr_%d.pt" % batches_done)
 
-		similarity = torch.sum(torch.mul(real_imgs.data, gen_imgs.data))
+		similarity = torch.sum(torch.mul(real_associate.data, gen_associate.data))
 		if similarity > best_similarity:
 			best_similarity = similarity
-			torch.save(real_imgs.data, "charts/similarity_real_%d.pt" % batches_done)
-			torch.save(gen_imgs.data, "charts/similarity_gen_%d.pt" % batches_done)
+			torch.save(real_associate.data, "charts/similarity_real_%d.pt" % batches_done)
+			torch.save(gen_associate.data, "charts/similarity_gen_%d.pt" % batches_done)
 
 	d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
 	d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
