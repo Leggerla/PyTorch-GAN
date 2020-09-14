@@ -61,11 +61,13 @@ class StockDataset(torch.utils.data.Dataset):
 	def rolling_periods(self, df, window, roll):
 		res = []
 		enum = len(df.index)
+		max = torch.max(df.values[:, 1])
+		min = torch.max(df.values[:, 1])
 		for i in np.arange(enum, step=window):
 			if enum - i < window:
 				break
 			res.append(torch.tensor(df.iloc[i:i + roll].values[:, 1]))
-		return torch.stack(res)
+		return (torch.stack(res)-min)/(max-min)
 
 
 class Generator(nn.Module):
@@ -86,8 +88,7 @@ class Generator(nn.Module):
 			nn.BatchNorm1d(64, 0.8),
 			nn.LeakyReLU(0.2, inplace=True),
 			nn.Conv1d(64, opt.channels, 3, stride=1, padding=1),
-			nn.Tanh(),
-			nn.Linear(4 * self.init_size, 4 * self.init_size)
+			nn.Tanh()
 		)
 
 	def forward(self, z):
