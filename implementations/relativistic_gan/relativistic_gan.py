@@ -36,6 +36,11 @@ print(opt)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+def correlation(gen):
+  coor = []
+  for i in range(gen.shape[0]):
+    coor.append(torch.from_numpy(np.correlate(gen[i, :].cpu(), gen[i, :].cpu(), 'full')))
+  return torch.stack(coor)
 
 class StockDataset(torch.utils.data.Dataset):
 	'Characterizes a dataset for PyTorch'
@@ -227,7 +232,7 @@ for epoch in range(opt.n_epochs):
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 
-		matrix_autocorr = autocorrelation(gen_associate.data[:, 0, :], dim=1)
+		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
 		autocorr = torch.mean(matrix_autocorr)
 		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
