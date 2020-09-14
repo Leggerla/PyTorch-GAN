@@ -96,7 +96,7 @@ class Generator(nn.Module):
 		print (opt.vector_size, 128 * self.init_size)
 		print (z.shape)
 		print (z)
-		out = self.l1(z.float())
+		out = self.l1(z)
 		print (out.shape)
 		print (out)
 		out = out.view(out.shape[0], 128, self.init_size)
@@ -169,6 +169,7 @@ for epoch in range(opt.n_epochs):
 	sum_g_loss = []
 	for i, (base, associate) in enumerate(dataloader):
 
+		base, associate = base.to(device), associate.to(device)
 		# Adversarial ground truths
 		valid = Variable(Tensor(associate.shape[0], 1).fill_(1.0), requires_grad=False)
 		fake = Variable(Tensor(associate.shape[0], 1).fill_(0.0), requires_grad=False)
