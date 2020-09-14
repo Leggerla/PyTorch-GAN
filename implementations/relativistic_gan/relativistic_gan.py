@@ -134,8 +134,8 @@ class Discriminator(nn.Module):
 adversarial_loss = torch.nn.BCEWithLogitsLoss().to(device)
 
 # Initialize generator and discriminator
-generator = Generator().to(device)
-discriminator = Discriminator().to(device)
+generator = Generator().double().to(device)
+discriminator = Discriminator().double().to(device)
 
 # Configure data loader
 dataset = StockDataset(opt.data_path)
