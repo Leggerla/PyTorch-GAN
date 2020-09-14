@@ -67,7 +67,7 @@ class StockDataset(torch.utils.data.Dataset):
 			if enum - i < window:
 				break
 			res.append(torch.tensor(df.iloc[i:i + roll].values[:, 1]))
-		return (torch.stack(res)-min)/(max-min)
+		return (torch.stack(res)-min+1e-8)/(max-min+1e-8)
 
 
 class Generator(nn.Module):
