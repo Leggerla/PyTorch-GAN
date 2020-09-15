@@ -230,8 +230,9 @@ for epoch in range(opt.n_epochs):
 		sum_g_loss.append(g_loss.item())
 
 		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
-		autocorr = torch.mean(matrix_autocorr)
-		if autocorr <= 0.09 and autocorr >= 0.08:
+		mask = matrix_autocorr >= 0.08 and matrix_autocorr <= 0.09
+		autocorr = torch.sum(mask)
+		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
 			print('Autocorrelation', epoch, best_autocorrelation)
 			torch.save(real_associate.data, "charts/real.pt")
