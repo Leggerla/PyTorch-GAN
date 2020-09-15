@@ -7,6 +7,7 @@ import pandas as pd
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
 from scipy.signal import correlate
+from pytorch_forecasting.utils import autocorrelation
 
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -232,7 +233,7 @@ for epoch in range(opt.n_epochs):
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 
-		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
+		matrix_autocorr = autocorrelation(gen_associate.data[:, 0, :], dim=1)/gen_associate.data.shape[-1]
 		autocorr = torch.mean(matrix_autocorr)
 		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
