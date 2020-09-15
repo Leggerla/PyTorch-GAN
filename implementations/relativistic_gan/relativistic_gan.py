@@ -237,8 +237,8 @@ for epoch in range(opt.n_epochs):
 		autocorr = torch.sum(mask).float()
 		if autocorr >= best_autocorrelation:
 			#if autocorr > best_autocorrelation:
-			print('Autocorrelation', epoch, best_autocorrelation)
 			best_autocorrelation = autocorr.item()
+			print('Autocorrelation', epoch, best_autocorrelation)
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
 			torch.save(matrix_autocorr, "charts/autocorr.pt")
@@ -263,3 +263,6 @@ for epoch in range(opt.n_epochs):
 torch.save(d_real_losses, 'd_real_losses.pt')
 torch.save(d_fake_losses, 'd_fake_losses.pt')
 torch.save(g_losses, 'g_losses.pt')
+
+torch.save(generator.state_dict(), "final_generator.pt")
+torch.save(discriminator.state_dict(), "final_discriminator.pt")
