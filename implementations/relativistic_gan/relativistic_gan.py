@@ -233,8 +233,9 @@ for epoch in range(opt.n_epochs):
 		mask = torch.logical_and(matrix_autocorr >= 0.07, matrix_autocorr < 0.19)
 		autocorr = torch.sum(mask).float()
 		if autocorr >= best_autocorrelation:
+			if autocorr > best_autocorrelation:
+				print('Autocorrelation', epoch, best_autocorrelation)
 			best_autocorrelation = autocorr.item()
-			print('Autocorrelation', epoch, best_autocorrelation)
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
 			torch.save(matrix_autocorr, "charts/autocorr.pt")
