@@ -161,7 +161,7 @@ Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTen
 d_real_losses = torch.zeros(opt.n_epochs)
 d_fake_losses = torch.zeros(opt.n_epochs)
 g_losses = torch.zeros(opt.n_epochs)
-best_autocorrelation = -int('inf')
+best_autocorrelation = -float('inf')
 best_similarity = -float('inf')
 for epoch in range(opt.n_epochs):
 	sum_d_real_loss = []
@@ -231,7 +231,7 @@ for epoch in range(opt.n_epochs):
 
 		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
 		mask = torch.logical_and(matrix_autocorr >= 0.08, matrix_autocorr <= 0.09)
-		autocorr = torch.sum(mask)
+		autocorr = torch.sum(mask).float()
 		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
 			print('Autocorrelation', epoch, best_autocorrelation)
