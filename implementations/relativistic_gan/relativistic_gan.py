@@ -237,7 +237,7 @@ for epoch in range(opt.n_epochs):
 		autocorr = torch.mean(matrix_autocorr)
 		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
-			print('Autocorrelation', epich, best_autocorrelation)
+			print('Autocorrelation', epoch, best_autocorrelation)
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
 			torch.save(matrix_autocorr, "charts/autocorr.pt")
