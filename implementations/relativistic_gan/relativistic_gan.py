@@ -229,12 +229,13 @@ for epoch in range(opt.n_epochs):
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 
-		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
-		mask = torch.logical_and(matrix_autocorr >= 0.07, matrix_autocorr < 0.19)
-		autocorr = torch.sum(mask).float()
+		#matrix_autocorr = correlation(gen_associate.data[:, 0, :])
+		#mask = torch.logical_and(matrix_autocorr >= 0.07, matrix_autocorr < 0.19)
+		#autocorr = torch.sum(mask).float()
+		autocorr = torch.sum((torch.std(gen[:, 0, :], dim=0) > 0.02)).float()
 		if autocorr >= best_autocorrelation:
 			if autocorr > best_autocorrelation:
-				print('Autocorrelation', epoch, best_autocorrelation)
+				print('Std', epoch, best_autocorrelation)
 			best_autocorrelation = autocorr.item()
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
