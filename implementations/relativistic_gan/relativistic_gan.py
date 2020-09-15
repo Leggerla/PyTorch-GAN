@@ -28,7 +28,7 @@ parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first 
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
-parser.add_argument("--vector_size", type=int, default=5, help="size of each image dimension")
+parser.add_argument("--vector_size", type=int, default=16, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
 parser.add_argument("--rel_avg_gan", action="store_true", help="relativistic average GAN instead of standard")
@@ -48,7 +48,7 @@ class StockDataset(torch.utils.data.Dataset):
 
 	def __init__(self, data_path):
 		'Initialization'
-		window, roll = 5, 5
+		window, roll = 16, 16
 		self.base = self.rolling_periods(pd.read_csv(data_path + 'base.csv', usecols=[1]), window, roll)
 		self.associate = self.rolling_periods(pd.read_csv(data_path + 'associate.csv', usecols=[1]), window, roll)
 
