@@ -251,7 +251,7 @@ for epoch in range(opt.n_epochs):
 	d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
 	g_losses[epoch] = torch.mean(torch.tensor(sum_g_loss))
 	
-	if (epoch + 1) % 5000 == 0:
+	if (epoch + 1) % 500 == 0:
 		print("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
 				% (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
 			)
