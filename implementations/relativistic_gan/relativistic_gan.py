@@ -230,7 +230,7 @@ for epoch in range(opt.n_epochs):
 		sum_g_loss.append(g_loss.item())
 
 		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
-		mask = torch.logical_and(matrix_autocorr >= 0.08, matrix_autocorr < 0.15)
+		mask = torch.logical_and(matrix_autocorr >= 0.02, matrix_autocorr < 0.09)
 		autocorr = torch.sum(mask).float()
 		if autocorr > best_autocorrelation:
 			best_autocorrelation = autocorr.item()
