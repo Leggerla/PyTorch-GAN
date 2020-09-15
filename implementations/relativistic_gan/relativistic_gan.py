@@ -234,8 +234,8 @@ for epoch in range(opt.n_epochs):
 		#autocorr = torch.sum(mask).float()
 		autocorr = torch.sum().float()
 		if autocorr >= best_autocorrelation:
-			if autocorr > best_autocorrelation:
-				print('Std', epoch, best_autocorrelation)
+			#if autocorr > best_autocorrelation:
+			print('Std', epoch, best_autocorrelation)
 			best_autocorrelation = autocorr.item()
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
