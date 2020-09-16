@@ -229,10 +229,8 @@ for epoch in range(opt.n_epochs):
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 		
-		print (base.data.shape, real_associate.data.shape, gen_associate.data.shape)
-		
-		sp_vix_real_corr = correlate(base.data.cpu(), real_associate.data.cpu(), 'same')
-		sp_vix_gen_corr = correlate(base.data.cpu(), gen_associate.data.cpu(), 'same')
+		sp_vix_real_corr = correlate(base.data.cpu(), real_associate.data[:, 0, :].cpu(), 'same')
+		sp_vix_gen_corr = correlate(base.data.cpu(), gen_associate.data[:, 0, :].cpu(), 'same')
 		
 		print (sp_vix_real_corr, sp_vix_gen_corr)
 
