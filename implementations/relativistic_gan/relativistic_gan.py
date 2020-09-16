@@ -239,7 +239,8 @@ for epoch in range(opt.n_epochs):
 			if corr_dist < best_corr_dist:
 				best_corr_dist = corr_dist.item()
 				print('Correlation distance', epoch, best_corr_dist)
-				best_list.append(best_corr_dist)
+				batch_num = epoch*opt.batch_size + i
+				best_list.append(torch.tensor([batch_num, best_corr_dist]))
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
 			torch.save(sp_vix_real_corr, "charts/real_corr.pt")
