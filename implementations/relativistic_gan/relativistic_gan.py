@@ -185,6 +185,8 @@ for epoch in range(opt.n_epochs):
 
 		optimizer_D.zero_grad()
 
+		gen_associate = generator(base)
+		
 		# Predict validity
 		real_pred = discriminator(real_associate)
 		fake_pred = discriminator(gen_associate.detach())
