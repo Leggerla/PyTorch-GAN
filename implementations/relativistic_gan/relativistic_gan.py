@@ -232,7 +232,7 @@ for epoch in range(opt.n_epochs):
 		sp_vix_real_corr = np.mean(correlate(base.data.cpu(), real_associate.data[:, 0, :].cpu(), 'same'), axis=0)
 		sp_vix_gen_corr = np.mean(correlate(base.data.cpu(), gen_associate.data[:, 0, :].cpu(), 'same'), axis=0)
 		
-		print (sp_vix_real_corr, sp_vix_gen_corr)
+		print (np.linalg.norm(sp_vix_real_corr-sp_vix_gen_corr))
 
 		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
 		#mask = torch.logical_and(torch.mean(gen_associate.data[:, 0, :], dim=0) > 0.3, torch.mean(gen_associate.data[:, 0, :], dim=0) < 0.5)
