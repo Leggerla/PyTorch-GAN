@@ -228,6 +228,11 @@ for epoch in range(opt.n_epochs):
 		sum_d_real_loss.append(real_loss.item())
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
+		
+		sp_vix_real_corr = correlate(base.data.cpu(), real_associate.data.cpu(), 'same')
+		sp_vix_gen_corr = correlate(base.data.cpu(), gen_associate.data.cpu(), 'same')
+		
+		print (sp_vix_real_corr, sp_vix_gen_corr)
 
 		matrix_autocorr = correlation(gen_associate.data[:, 0, :])
 		#mask = torch.logical_and(torch.mean(gen_associate.data[:, 0, :], dim=0) > 0.3, torch.mean(gen_associate.data[:, 0, :], dim=0) < 0.5)
