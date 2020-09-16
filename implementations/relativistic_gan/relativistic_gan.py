@@ -235,6 +235,7 @@ for epoch in range(opt.n_epochs):
 		sp_vix_gen_corr = correlate(base.data.cpu(), gen_associate.data[:, 0, :].cpu(), 'same')
 		
 		corr_dist = np.linalg.norm(sp_vix_real_corr-sp_vix_gen_corr)
+		print (corr_dist)
 		if corr_dist <= best_corr_dist:
 			if corr_dist < best_corr_dist:
 				best_corr_dist = corr_dist.item()
