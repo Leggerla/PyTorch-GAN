@@ -264,10 +264,10 @@ for epoch in range(opt.n_epochs):
 	print("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
 			% (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
 		)
-
-torch.save(d_real_losses, 'd_real_losses.pt')
-torch.save(d_fake_losses, 'd_fake_losses.pt')
-torch.save(g_losses, 'g_losses.pt')
+	if epoch % 10 == 0:
+		torch.save(d_real_losses, 'd_real_losses.pt')
+		torch.save(d_fake_losses, 'd_fake_losses.pt')
+		torch.save(g_losses, 'g_losses.pt')
 
 torch.save(generator.state_dict(), "final_generator.pt")
 torch.save(discriminator.state_dict(), "final_discriminator.pt")
