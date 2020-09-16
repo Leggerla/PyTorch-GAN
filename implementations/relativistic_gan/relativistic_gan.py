@@ -242,14 +242,13 @@ for epoch in range(opt.n_epochs):
 				print('Correlation distance', epoch, best_corr_dist)
 				batch_num = epoch*opt.batch_size + i
 				best_list.append(torch.tensor([batch_num, best_corr_dist]))
-			print (best_list)
+				
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
 			torch.save(sp_vix_real_corr, "charts/real_corr.pt")
 			torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
 			torch.save(generator.state_dict(), "generator.pt")
 			torch.save(discriminator.state_dict(), "discriminator.pt")
-			print (torch.stack(best_list))
 			torch.save(torch.stack(best_list), "correlation distance.pt")
 
 		'''matrix_autocorr = correlation(gen_associate.data[:, 0, :])
