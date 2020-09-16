@@ -249,7 +249,8 @@ for epoch in range(opt.n_epochs):
 			torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
 			torch.save(generator.state_dict(), "generator.pt")
 			torch.save(discriminator.state_dict(), "discriminator.pt")
-			torch.save(torch.tensor(best_list), "correlation distance.pt")
+			print (torch.stack(best_list))
+			torch.save(torch.stack(best_list), "correlation distance.pt")
 
 		'''matrix_autocorr = correlation(gen_associate.data[:, 0, :])
 		#mask = torch.logical_and(torch.mean(gen_associate.data[:, 0, :], dim=0) > 0.3, torch.mean(gen_associate.data[:, 0, :], dim=0) < 0.5)
