@@ -194,13 +194,13 @@ for epoch in range(opt.n_epochs):
 		real_pred = discriminator(real_associate).detach()
 		fake_pred = discriminator(gen_associate)
 
-		if opt.rel_avg_gan:
+		'''if opt.rel_avg_gan:
 			g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
 		else:
-			g_loss = adversarial_loss(fake_pred - real_pred, valid)
+			g_loss = adversarial_loss(fake_pred - real_pred, valid)'''
 
 		# Loss measures generator's ability to fool the discriminator
-		##??? todo g_loss = adversarial_loss(discriminator(gen_associate), valid)
+		g_loss = adversarial_loss(discriminator(gen_associate), valid)
 
 		g_loss.backward()
 		optimizer_G.step()
