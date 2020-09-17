@@ -241,8 +241,8 @@ for epoch in range(opt.n_epochs):
 			    real_loss = adversarial_loss(real_pred - fake_pred, valid)
 			    fake_loss = adversarial_loss(fake_pred - real_pred, fake)'''
 
-			real_loss = crossentropy_loss(real_pred, valid)
-			fake_loss = crossentropy_loss(fake_pred, fake)
+			real_loss = crossentropy_loss(real_pred, valid.long())
+			fake_loss = crossentropy_loss(fake_pred, fake.long())
 
 			d_loss.backward()
 			optimizer_D.step()
