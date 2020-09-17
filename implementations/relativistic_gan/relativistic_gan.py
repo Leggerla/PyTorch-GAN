@@ -102,10 +102,16 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, base, z):
+		print ('Generator')
+		ptrint (base.shape, z.shape)
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
+		ptrint (out.shape)
 		out = out[:, None]
+		ptrint (out.shape)
 		out = self.model(out)
+		ptrint (out.shape)
 		out = torch.squeeze(out)
+		ptrint (out.shape)
 		return out
 
 
