@@ -88,8 +88,8 @@ class Generator(nn.Module):
 					   padding=padding), nn.BatchNorm2d(out_filters), nn.LeakyReLU(0.2, inplace=True)]
 			return block
 
-		self.blocks = 
-			[generator_block(opt.channels, 512),
+		self.blocks = [
+			 generator_block(opt.channels, 512),
 			 generator_block(512, 256),
 			 generator_block(256, 128),
 			 generator_block(128, 64),
