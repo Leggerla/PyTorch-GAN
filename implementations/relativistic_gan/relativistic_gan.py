@@ -186,6 +186,7 @@ for epoch in range(opt.n_epochs):
 		fake = Variable(Tensor(associate.shape[0], 1).fill_(0.0), requires_grad=False)
 
 		# Configure input
+		real_base = Variable(base.type(Tensor))[:, None, :]
 		real_associate = Variable(associate.type(Tensor))[:, None, :]
 		
 		# -----------------
@@ -200,8 +201,8 @@ for epoch in range(opt.n_epochs):
 		# Generate a batch of images
 		gen_associate = generator(base, z)
 
-		real_pred = discriminator(real_associate).detach()
-		fake_pred = discriminator(gen_associate)
+		real_pred = discriminator(real_base, real_associate).detach()
+		fake_pred = discriminator(real_base, gen_associate)
 
 		if opt.rel_avg_gan:
 		    g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
@@ -221,7 +222,7 @@ for epoch in range(opt.n_epochs):
 		g_loss.backward()
 		optimizer_G.step()
 
-		for n in range(5):
+		for n in range(1):
 
 			# ---------------------
 			#  Train Discriminator
@@ -230,8 +231,8 @@ for epoch in range(opt.n_epochs):
 			optimizer_D.zero_grad()
 
 			# Predict validity
-			real_pred = discriminator(real_associate)
-			fake_pred = discriminator(gen_associate.detach())
+			real_pred = discriminator(real_base, real_associate)
+			fake_pred = discriminator(real_base, gen_associate.detach())
 
 			if opt.rel_avg_gan:
 			    real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
