@@ -200,16 +200,16 @@ for epoch in range(opt.n_epochs):
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
 
-		real_pred = discriminator(real_base, real_associate).detach()
+		'''real_pred = discriminator(real_base, real_associate).detach()
 		fake_pred = discriminator(real_base, gen_associate)
 
-		'''if opt.rel_avg_gan:
+		if opt.rel_avg_gan:
 		    g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
 		else:
 		    g_loss = adversarial_loss(fake_pred - real_pred, valid)'''
 
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_associate), valid)
+		g_loss = adversarial_loss(discriminator(real_base, gen_associate), valid)
 		
 		if g_loss.item() < best_loss:
 			best_loss = g_loss.item()
