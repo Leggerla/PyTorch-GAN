@@ -88,18 +88,17 @@ class Generator(nn.Module):
 					   padding=padding), nn.BatchNorm2d(out_filters), nn.LeakyReLU(0.2, inplace=True)]
 			return block
 
-		self.model = nn.Sequential(
-			*generator_block(opt.channels, 512),
-			*generator_block(512, 256),
-			*generator_block(256, 128),
-			*generator_block(128, 64),
-			*generator_block(64, 32),
-			*generator_block(32, 16),
-			*generator_block(16, 8),
-			*generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1)),
-			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1)),
-			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0))
-		)
+		self.blocks = 
+			[generator_block(opt.channels, 512),
+			 generator_block(512, 256),
+			 generator_block(256, 128),
+			 generator_block(128, 64),
+			 generator_block(64, 32),
+			 generator_block(32, 16),
+			 generator_block(16, 8),
+			 generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1)),
+			 generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1)),
+			 generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0))]
 
 	def forward(self, base, z):
 		print ('Generator')
@@ -108,8 +107,9 @@ class Generator(nn.Module):
 		print (out.shape)
 		out = out[:, None]
 		print (out.shape)
-		out = self.model(out)
-		print (out.shape)
+		for block in self.blocks:	
+			out = block(out)
+			print (out.shape)
 		out = torch.squeeze(out)
 		print (out.shape)
 		return out
