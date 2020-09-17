@@ -202,7 +202,7 @@ for epoch in range(opt.n_epochs):
 		    g_loss = adversarial_loss(fake_pred - real_pred, valid)
 
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_associate), valid)
+		#??? g_loss = adversarial_loss(discriminator(gen_associate), valid)
 
 		g_loss.backward()
 		optimizer_G.step()
