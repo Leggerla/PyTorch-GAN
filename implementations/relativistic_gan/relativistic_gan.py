@@ -102,7 +102,6 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, base, z):
-		print (base, z)
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		out = out[:, None]
 		out = self.model(out)
@@ -114,26 +113,30 @@ class Discriminator(nn.Module):
 	def __init__(self):
 		super(Discriminator, self).__init__()
 
-		def discriminator_block(in_filters, out_filters, bn=True):
-			block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True),
-					 nn.Dropout(0.25)]
-			if bn:
-				block.append(nn.BatchNorm1d(out_filters, 0.8))
+		def discriminator_block(in_filters, out_filters):
+			block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True)]
 			return block
 
 		self.model = nn.Sequential(
-			*discriminator_block(opt.channels, 16, bn=False),
-			*discriminator_block(16, 32),
-			*discriminator_block(32, 64),
-			*discriminator_block(64, 128),
+			*discriminator_block(opt.channels, 64),
+			*discriminator_block(64, 64),
+			*discriminator_block(64, 64),
+			*discriminator_block(64, 64),
+			*discriminator_block(64, 32),
+			*discriminator_block(32, 32),
+			*discriminator_block(32, 32),
+			*discriminator_block(32, 32)
 		)
 
 		# The height and width of downsampled image
-		ds_size = opt.vector_size // 2 ** 4
-		self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size, 1))
+		ds_size = 2*opt.vector_size
+		self.adv_layer = nn.Sequential(nn.Linear(32*ds_size, 100), nn.LeakyReLU(0.2, inplace=True), 
+					       nn.Linear(100, 50), nn.LeakyReLU(0.2, inplace=True),
+					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
 
-	def forward(self, img):
-		out = self.model(img)
+	def forward(self, base, associate):
+		out = torch.cat([base, associate], dim=1)[:, None]
+		out = self.model(out)
 		out = out.view(out.shape[0], -1)
 		validity = self.adv_layer(out)
 		return validity
@@ -143,7 +146,7 @@ class Discriminator(nn.Module):
 adversarial_loss = torch.nn.BCEWithLogitsLoss().to(device)
 
 # Initialize generator and discriminator
-generator = Generator().to(device)
+generator = Generator().double().to(device)
 discriminator = Discriminator().to(device)
 
 # Configure data loader
