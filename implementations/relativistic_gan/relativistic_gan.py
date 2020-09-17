@@ -135,6 +135,7 @@ class Discriminator(nn.Module):
 					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
 
 	def forward(self, base, associate):
+		print (base.shape, associate.shape)
 		out = torch.cat([base, associate], dim=1)[:, None]
 		out = self.model(out)
 		out = out.view(out.shape[0], -1)
