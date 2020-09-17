@@ -127,8 +127,6 @@ class Discriminator(nn.Module):
 			*discriminator_block(32, 32)
 		)
 
-		# The height and width of downsampled image
-		ds_size = 2*opt.vector_size
 		self.adv_layer = nn.Sequential(nn.Linear(32, 100), nn.LeakyReLU(0.2, inplace=True), 
 					       nn.Linear(100, 50), nn.LeakyReLU(0.2, inplace=True),
 					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
@@ -231,7 +229,7 @@ for epoch in range(opt.n_epochs):
 		g_loss.backward()
 		optimizer_G.step()
 
-		for n in range(5):
+		for n in range(10):
 
 			# ---------------------
 			#  Train Discriminator
