@@ -224,7 +224,7 @@ for epoch in range(opt.n_epochs):
 		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
 		# Generate
-		gen_associate = generator(torch.cat([base, z]))
+		gen_associate = generator(torch.cat([base, z], dim=1))
 
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(discriminator(gen_associate), valid)
