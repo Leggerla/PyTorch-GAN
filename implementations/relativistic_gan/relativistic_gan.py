@@ -180,6 +180,32 @@ for epoch in range(opt.n_epochs):
 
 		# Configure input
 		real_associate = Variable(associate.type(Tensor))[:, None, :]
+		
+		# -----------------
+		#  Train Generator
+		# -----------------
+
+		optimizer_G.zero_grad()
+
+		# Sample noise as generator input
+		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
+
+		# Generate a batch of images
+		gen_associate = generator(torch.cat([base, z], dim=1))
+
+		real_pred = discriminator(real_associate).detach()
+		fake_pred = discriminator(gen_associate)
+
+		if opt.rel_avg_gan:
+		    g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
+		else:
+		    g_loss = adversarial_loss(fake_pred - real_pred, valid)
+
+		# Loss measures generator's ability to fool the discriminator
+		g_loss = adversarial_loss(discriminator(gen_associate), valid)
+
+		g_loss.backward()
+		optimizer_G.step()
 
 		# ---------------------
 		#  Train Discriminator
@@ -187,52 +213,24 @@ for epoch in range(opt.n_epochs):
 
 		optimizer_D.zero_grad()
 
-		## Sample noise as generator input
-		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
-
-		# Generate a batch
-		gen_associate = generator(torch.cat([base, z], dim=1))
-
 		# Predict validity
 		real_pred = discriminator(real_associate)
 		fake_pred = discriminator(gen_associate.detach())
 
 		if opt.rel_avg_gan:
-			real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
-			fake_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), fake)
+		    real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
+		    fake_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), fake)
 		else:
-			real_loss = adversarial_loss(real_pred - fake_pred, valid)
-			fake_loss = adversarial_loss(fake_pred - real_pred, fake)
+		    real_loss = adversarial_loss(real_pred - fake_pred, valid)
+		    fake_loss = adversarial_loss(fake_pred - real_pred, fake)
 
-		d_loss = (real_loss + fake_loss)  # todo /2?
-
-		sum_d_real_loss.append(real_loss.item())
-		sum_d_fake_loss.append(fake_loss.item())
+		d_loss = (real_loss + fake_loss) / 2
 
 		d_loss.backward()
 		optimizer_D.step()
-
-		# -----------------
-		#  Train Generator
-		# -----------------
-
-		optimizer_G.zero_grad()
-
-		## Sample noise as generator input
-		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
-
-		# Generate
-		gen_associate = generator(torch.cat([base, z], dim=1))
-
-		# Loss measures generator's ability to fool the discriminator
-		if opt.rel_avg_gan:
-		    g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
-		else:
-		    g_loss = adversarial_loss(fake_pred - real_pred, valid)
-
-		g_loss.backward()
-		optimizer_G.step()
-
+		
+		sum_d_real_loss.append(real_loss.item())
+		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 
 		sp_vix_real_corr = correlate(base.data.cpu(), real_associate.data[:, 0, :].cpu(), 'same')
