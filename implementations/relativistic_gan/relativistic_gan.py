@@ -27,8 +27,8 @@ parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rat
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=96, help="dimensionality of the latent space")
-parser.add_argument("--vector_size", type=int, default=2*96, help="size of each image dimension")
+parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
+parser.add_argument("--vector_size", type=int, default=100, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
 parser.add_argument("--rel_avg_gan", action="store_true", help="relativistic average GAN instead of standard")
@@ -50,7 +50,7 @@ class StockDataset(torch.utils.data.Dataset):
 
 	def __init__(self, data_path):
 		'Initialization'
-		window, roll = 96, 96
+		window, roll = 100, 100
 		self.base = self.rolling_periods(pd.read_csv(data_path + 'base.csv', usecols=[1]), window, roll)
 		self.associate = self.rolling_periods(pd.read_csv(data_path + 'associate.csv', usecols=[1]), window, roll)
 
@@ -73,38 +73,40 @@ class StockDataset(torch.utils.data.Dataset):
 		min = torch.min(array)
 		enum = array.shape[0]
 		for i in torch.arange(0, enum, step=window):
-			if enum < i + window + roll:
+			if enum < i + roll:
 				break
-			res.append(array[i:i + window + roll][:, 0])
+			res.append(array[i:i + roll][:, 0])
 		return 2 * (torch.stack(res) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
 class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
+		
+		def generator_block(in_filters, out_filters, kernel_size=(2, 5), padding=(1, 2)):
+			block = [nn.Conv2d(in_filters, out_filters, kernel_size=kernel_size,
+					   padding=padding), nn.BatchNorm2d(out_filters), nn.LeakyReLU(0.2, inplace=True)]
+			return block
 
-		self.init_size = opt.vector_size // 4
-		self.l1 = nn.Sequential(nn.Linear(opt.vector_size + opt.latent_dim, 128 * self.init_size))
-
-		self.conv_blocks = nn.Sequential(
-			nn.BatchNorm1d(128),
-			nn.Upsample(scale_factor=2),
-			nn.Conv1d(128, 128, 3, stride=1, padding=1),
-			nn.BatchNorm1d(128, 0.8),
-			nn.LeakyReLU(0.2, inplace=True),
-			nn.Upsample(scale_factor=2),
-			nn.Conv1d(128, 64, 3, stride=1, padding=1),
-			nn.BatchNorm1d(64, 0.8),
-			nn.LeakyReLU(0.2, inplace=True),
-			nn.Conv1d(64, opt.channels, 3, stride=1, padding=1),
-			nn.Tanh()
+		self.model = nn.Sequential(
+			*generator_block(opt.channels, 512),
+			*generator_block(512, 256),
+			*generator_block(256, 128),
+			*generator_block(128, 64),
+			*generator_block(64, 32),
+			*generator_block(32, 16),
+			*generator_block(16, 8),
+			*generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1)),
+			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1)),
+			*generator_block(2, 1, kernel_size=(2, 1), padding=(1, 0))
 		)
 
-	def forward(self, z):
-		out = self.l1(z.float())
-		out = out.view(out.shape[0], 128, self.init_size)
-		img = self.conv_blocks(out)
-		return img
+	def forward(self, base, z):
+		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
+		out = out[:, None]
+		out = self.model(out)
+		out = torch.squeeze(out)
+		return out
 
 
 class Discriminator(nn.Module):
@@ -192,7 +194,7 @@ for epoch in range(opt.n_epochs):
 		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
 		# Generate a batch of images
-		gen_associate = generator(torch.cat([base, z], dim=1))
+		gen_associate = generator(base, z)
 
 		real_pred = discriminator(real_associate).detach()
 		fake_pred = discriminator(gen_associate)
