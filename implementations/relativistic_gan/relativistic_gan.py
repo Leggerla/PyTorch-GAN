@@ -101,16 +101,10 @@ class Generator(nn.Module):
 			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
 
 	def forward(self, base, z):
-		print ('Generator')
-		print (base.shape, z.shape)
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
-		print (out.shape)
-		out = out[:, None]
-		print (out.shape)	
+		out = out[:, None]	
 		out = self.model(out)
-		print (out.shape)
 		out = torch.squeeze(out)
-		print (out.shape)
 		return out
 
 
@@ -140,13 +134,9 @@ class Discriminator(nn.Module):
 					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
 
 	def forward(self, base, associate):
-		print (base.shape, associate.shape)
 		out = torch.cat([base, associate], dim=1)[:, None, :]
-		print (out.shape)
 		out = self.model(out)
-		print (out.shape)
 		out = out.view(out.shape[0], -1)
-		print (out.shape)
 		validity = self.adv_layer(out)
 		return validity
 
@@ -259,8 +249,8 @@ for epoch in range(opt.n_epochs):
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 
-		sp_vix_real_corr = correlate(base.data.cpu(), real_associate.data[:, 0, :].cpu(), 'same')
-		sp_vix_gen_corr = correlate(base.data.cpu(), gen_associate.data[:, 0, :].cpu(), 'same')
+		sp_vix_real_corr = correlate(real_base.data.cpu(), real_associate.data.cpu(), 'same')
+		sp_vix_gen_corr = correlate(real_base.data.cpu(), gen_associate.data.cpu(), 'same')
 
 		corr_dist = np.linalg.norm(sp_vix_real_corr - sp_vix_gen_corr)
 		if corr_dist <= best_corr_dist:
