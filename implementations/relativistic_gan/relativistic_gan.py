@@ -74,7 +74,7 @@ class StockDataset(torch.utils.data.Dataset):
 		for i in torch.arange(0, enum, step=roll):
 			if enum < i + window:
 				break
-			res.append(array[i:i + window][:, 0])
+			res.append(array[i:i + window])
 		return 2 * (torch.stack(res) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
