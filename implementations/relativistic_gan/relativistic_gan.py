@@ -102,6 +102,7 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, base, z):
+		print (type(base), type(z))
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		out = out[:, None]
 		out = self.model(out)
@@ -115,7 +116,7 @@ class Discriminator(nn.Module):
 
 		def discriminator_block(in_filters, out_filters, bn=True):
 			block = [nn.Conv1d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True),
-					 nn.Dropout(0.25)]  # stride=2 todo
+					 nn.Dropout(0.25)]
 			if bn:
 				block.append(nn.BatchNorm1d(out_filters, 0.8))
 			return block
