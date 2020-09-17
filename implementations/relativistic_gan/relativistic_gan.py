@@ -167,6 +167,7 @@ best_autocorrelation = -float('inf')
 best_similarity = -float('inf')
 best_corr_dist = float('inf')
 best_list = []
+best_loss = float('inf')
 for epoch in range(opt.n_epochs):
 	sum_d_real_loss = []
 	sum_d_fake_loss = []
@@ -210,9 +211,7 @@ for epoch in range(opt.n_epochs):
 			torch.save(gen_associate.data, "charts/best_loss_gen.pt")
 			torch.save(generator.state_dict(), "best_loss_generator.pt")
 			torch.save(discriminator.state_dict(), "best_loss_discriminator.pt")
-
 			
-
 		g_loss.backward()
 		optimizer_G.step()
 
