@@ -288,3 +288,7 @@ for epoch in range(opt.n_epochs):
 
 torch.save(generator.state_dict(), "final_generator.pt")
 torch.save(discriminator.state_dict(), "final_discriminator.pt")
+
+torch.save(d_real_losses, 'd_real_losses.pt')
+torch.save(d_fake_losses, 'd_fake_losses.pt')
+torch.save(g_losses, 'g_losses.pt')
