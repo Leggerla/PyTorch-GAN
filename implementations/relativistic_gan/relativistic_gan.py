@@ -7,7 +7,7 @@ import pandas as pd
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
 from scipy.signal import correlate
-#from pytorch_forecasting.utils import autocorrelation
+# from pytorch_forecasting.utils import autocorrelation
 
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -28,7 +28,7 @@ parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first 
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
 parser.add_argument("--latent_dim", type=int, default=96, help="dimensionality of the latent space")
-parser.add_argument("--vector_size", type=int, default=96*2, help="size of each image dimension")
+parser.add_argument("--vector_size", type=int, default=96 * 2, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
 parser.add_argument("--rel_avg_gan", action="store_true", help="relativistic average GAN instead of standard")
@@ -37,11 +37,13 @@ print(opt)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 def correlation(gen):
-  coor = []
-  for i in range(gen.shape[0]):
-    coor.append(torch.from_numpy(correlate(gen[i, :].cpu(), gen[i, :].cpu(), 'same')))#/gen.shape[-1]))
-  return torch.stack(coor)
+	coor = []
+	for i in range(gen.shape[0]):
+		coor.append(torch.from_numpy(correlate(gen[i, :].cpu(), gen[i, :].cpu(), 'same')))  # /gen.shape[-1]))
+	return torch.stack(coor)
+
 
 class StockDataset(torch.utils.data.Dataset):
 	'Characterizes a dataset for PyTorch'
@@ -65,16 +67,16 @@ class StockDataset(torch.utils.data.Dataset):
 		return X, y
 
 	def rolling_periods(self, df, window, roll):
-	  res = []
-	  array = torch.tensor(df.values)
-	  max = torch.max(array)
-	  min = torch.min(array)
-	  enum = array.shape[0]
-	  for i in torch.arange(0, enum, step=window):
-	    if enum - i < window:
-	      break
-	    res.append(array[i:2*i + roll][:, 0])
-	  return 2*(torch.stack(res)-min+1e-8)/(max-min+1e-8)-1
+		res = []
+		array = torch.tensor(df.values)
+		max = torch.max(array)
+		min = torch.min(array)
+		enum = array.shape[0]
+		for i in torch.arange(0, enum, step=window):
+			if enum - i < window:
+				break
+			res.append(array[i:2 * i + roll][:, 0])
+		return 2 * (torch.stack(res) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
 class Generator(nn.Module):
@@ -184,13 +186,13 @@ for epoch in range(opt.n_epochs):
 		# ---------------------
 
 		optimizer_D.zero_grad()
-		
+
 		## Sample noise as generator input
 		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
 		# Generate a batch
 		gen_associate = generator(torch.cat([base, z]))
-		
+
 		# Predict validity
 		real_pred = discriminator(real_associate)
 		fake_pred = discriminator(gen_associate.detach())
@@ -202,8 +204,8 @@ for epoch in range(opt.n_epochs):
 			real_loss = adversarial_loss(real_pred - fake_pred, valid)
 			fake_loss = adversarial_loss(fake_pred - real_pred, fake)
 
-		d_loss = (real_loss + fake_loss) # todo /2?
-		
+		d_loss = (real_loss + fake_loss)  # todo /2?
+
 		sum_d_real_loss.append(real_loss.item())
 		sum_d_fake_loss.append(fake_loss.item())
 
@@ -223,24 +225,24 @@ for epoch in range(opt.n_epochs):
 		gen_associate = generator(torch.cat([base, z]))
 
 		# Loss measures generator's ability to fool the discriminator
-        	g_loss = adversarial_loss(discriminator(gen_associate), valid)
+		g_loss = adversarial_loss(discriminator(gen_associate), valid)
 
 		g_loss.backward()
 		optimizer_G.step()
-		
+
 		sum_g_loss.append(g_loss.item())
-		
+
 		sp_vix_real_corr = correlate(base.data.cpu(), real_associate.data[:, 0, :].cpu(), 'same')
 		sp_vix_gen_corr = correlate(base.data.cpu(), gen_associate.data[:, 0, :].cpu(), 'same')
-		
-		corr_dist = np.linalg.norm(sp_vix_real_corr-sp_vix_gen_corr)
+
+		corr_dist = np.linalg.norm(sp_vix_real_corr - sp_vix_gen_corr)
 		if corr_dist <= best_corr_dist:
 			if corr_dist < best_corr_dist:
 				best_corr_dist = corr_dist.item()
 				print('Correlation distance', epoch, best_corr_dist)
-				batch_num = epoch*opt.batch_size + i
+				batch_num = epoch * opt.batch_size + i
 				best_list.append(torch.tensor([batch_num, best_corr_dist]))
-				
+
 			torch.save(real_associate.data, "charts/real.pt")
 			torch.save(gen_associate.data, "charts/gen.pt")
 			torch.save(sp_vix_real_corr, "charts/real_corr.pt")
@@ -277,8 +279,8 @@ for epoch in range(opt.n_epochs):
 		g_losses[epoch] = torch.mean(torch.tensor(sum_g_loss))
 
 	print("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]"
-			% (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
-		)
+		  % (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
+		  )
 	if epoch % 10 == 0:
 		torch.save(d_real_losses, 'd_real_losses.pt')
 		torch.save(d_fake_losses, 'd_fake_losses.pt')
