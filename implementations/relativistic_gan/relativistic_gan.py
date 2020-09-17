@@ -192,7 +192,7 @@ for epoch in range(opt.n_epochs):
 		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
 		# Generate a batch
-		gen_associate = generator(torch.cat([base, z]))
+		gen_associate = generator(torch.cat([base, z], dim=1))
 
 		# Predict validity
 		real_pred = discriminator(real_associate)
