@@ -207,7 +207,7 @@ for epoch in range(opt.n_epochs):
 		g_loss.backward()
 		optimizer_G.step()
 
-		for i in range(5):
+		for n in range(5):
 
 			# ---------------------
 			#  Train Discriminator
