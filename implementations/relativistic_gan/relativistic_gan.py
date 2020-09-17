@@ -51,8 +51,8 @@ class StockDataset(torch.utils.data.Dataset):
 	def __init__(self, data_path):
 		'Initialization'
 		window, roll = opt.vector_size, opt.vector_size
-		self.base = self.rolling_periods(pd.read_csv(data_path + 'base.csv', usecols=[1]), window, roll)
-		self.associate = self.rolling_periods(pd.read_csv(data_path + 'associate.csv', usecols=[1]), window, roll)
+		self.base = self.rolling_periods(torch.load(data_path + 'base.pt'), window, roll)
+		self.associate = self.rolling_periods(torch.load(data_path + 'associate.pt'), window, roll)
 
 	def __len__(self):
 		'Denotes the total number of samples'
@@ -66,9 +66,8 @@ class StockDataset(torch.utils.data.Dataset):
 
 		return X, y
 
-	def rolling_periods(self, df, window, roll):
+	def rolling_periods(self, array, window, roll):
 		res = []
-		array = torch.tensor(df.values)
 		max = torch.max(array)
 		min = torch.min(array)
 		enum = array.shape[0]
