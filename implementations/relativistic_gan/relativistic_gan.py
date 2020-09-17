@@ -241,10 +241,8 @@ for epoch in range(opt.n_epochs):
 			    real_loss = adversarial_loss(real_pred - fake_pred, valid)
 			    fake_loss = adversarial_loss(fake_pred - real_pred, fake)'''
 
-			print (real_pred)
-			print (valid.long())
-			real_loss = adversarial_loss(real_pred, valid.long())
-			fake_loss = adversarial_loss(fake_pred, fake.long())
+			real_loss = adversarial_loss(real_pred, valid)
+			fake_loss = adversarial_loss(fake_pred, fake)
 
 			d_loss.backward()
 			optimizer_D.step()
