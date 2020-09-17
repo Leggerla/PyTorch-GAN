@@ -50,7 +50,7 @@ class StockDataset(torch.utils.data.Dataset):
 
 	def __init__(self, data_path):
 		'Initialization'
-		window, roll = opt.vector_size, opt.vector_size
+		window, roll = 1000, 100
 		self.base = self.rolling_periods(pd.read_csv(data_path + 'base.csv', usecols=[1]), window, roll)
 		self.associate = self.rolling_periods(pd.read_csv(data_path + 'associate.csv', usecols=[1]), window, roll)
 
@@ -72,10 +72,10 @@ class StockDataset(torch.utils.data.Dataset):
 		max = torch.max(array)
 		min = torch.min(array)
 		enum = array.shape[0]
-		for i in torch.arange(0, enum, step=window):
+		for i in torch.arange(0, enum, step=roll):
 			if enum < i + roll:
 				break
-			res.append(array[i:i + roll][:, 0])
+			res.append(array[i:i + window][:, 0])
 		return 2 * (torch.stack(res) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
