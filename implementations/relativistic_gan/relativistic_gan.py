@@ -83,22 +83,22 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 		
-		def generator_block(in_filters, out_filters, kernel_size=(2, 5), padding=(1, 2)):
-			block = [nn.Conv2d(in_filters, out_filters, kernel_size=kernel_size,
-					   padding=padding), nn.BatchNorm2d(out_filters), nn.LeakyReLU(0.2, inplace=True)]
+		def generator_block(in_filters, out_filters, kernel_size=(2, 5), padding=(2, 2, 1, 0)):
+			block = [nn.ZeroPad2d(padding), nn.Conv2d(in_filters, out_filters, kernel_size=kernel_size),
+				 nn.BatchNorm2d(out_filters),nn.LeakyReLU(0.2, inplace=True)]
 			return block
 
 		self.model = nn.Sequential(
-			 *generator_block(opt.channels, 512),
-			 *generator_block(512, 256),
-			 *generator_block(256, 128),
-			 *generator_block(128, 64),
-			 *generator_block(64, 32),
-			 *generator_block(32, 16),
-			 *generator_block(16, 8),
-			 *generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1)),
-			 *generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1)),
-			 *generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0)))
+			*generator_block(1, 512),
+			*generator_block(512, 256),
+			*generator_block(256, 128),
+			*generator_block(128, 64),
+			*generator_block(64, 32),
+			*generator_block(32, 16),
+			*generator_block(16, 8),
+			*generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
+			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
+			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
 
 	def forward(self, base, z):
 		print ('Generator')
