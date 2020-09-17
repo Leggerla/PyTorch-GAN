@@ -50,7 +50,7 @@ class StockDataset(torch.utils.data.Dataset):
 
 	def __init__(self, data_path):
 		'Initialization'
-		window, roll = 100, 100
+		window, roll = opt.vector_size, opt.vector_size
 		self.base = self.rolling_periods(pd.read_csv(data_path + 'base.csv', usecols=[1]), window, roll)
 		self.associate = self.rolling_periods(pd.read_csv(data_path + 'associate.csv', usecols=[1]), window, roll)
 
@@ -102,7 +102,7 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, base, z):
-		print (type(base), type(z))
+		print (base, z)
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		out = out[:, None]
 		out = self.model(out)
