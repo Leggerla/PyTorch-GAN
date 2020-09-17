@@ -207,27 +207,29 @@ for epoch in range(opt.n_epochs):
 		g_loss.backward()
 		optimizer_G.step()
 
-		# ---------------------
-		#  Train Discriminator
-		# ---------------------
+		for i in range(5):
 
-		optimizer_D.zero_grad()
+			# ---------------------
+			#  Train Discriminator
+			# ---------------------
 
-		# Predict validity
-		real_pred = discriminator(real_associate)
-		fake_pred = discriminator(gen_associate.detach())
+			optimizer_D.zero_grad()
 
-		if opt.rel_avg_gan:
-		    real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
-		    fake_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), fake)
-		else:
-		    real_loss = adversarial_loss(real_pred - fake_pred, valid)
-		    fake_loss = adversarial_loss(fake_pred - real_pred, fake)
+			# Predict validity
+			real_pred = discriminator(real_associate)
+			fake_pred = discriminator(gen_associate.detach())
 
-		d_loss = (real_loss + fake_loss) / 2
+			if opt.rel_avg_gan:
+			    real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
+			    fake_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), fake)
+			else:
+			    real_loss = adversarial_loss(real_pred - fake_pred, valid)
+			    fake_loss = adversarial_loss(fake_pred - real_pred, fake)
 
-		d_loss.backward()
-		optimizer_D.step()
+			d_loss = (real_loss + fake_loss) / 2
+
+			d_loss.backward()
+			optimizer_D.step()
 		
 		sum_d_real_loss.append(real_loss.item())
 		sum_d_fake_loss.append(fake_loss.item())
