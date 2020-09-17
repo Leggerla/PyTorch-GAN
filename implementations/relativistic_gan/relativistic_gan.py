@@ -187,8 +187,8 @@ for epoch in range(opt.n_epochs):
 		fake = Variable(Tensor(associate.shape[0], 1).fill_(0.0), requires_grad=False)
 
 		# Configure input
-		real_base = Variable(base.type(Tensor))[:, None, :]
-		real_associate = Variable(associate.type(Tensor))[:, None, :]
+		real_base = Variable(base.type(Tensor))
+		real_associate = Variable(associate.type(Tensor))
 		
 		# -----------------
 		#  Train Generator
