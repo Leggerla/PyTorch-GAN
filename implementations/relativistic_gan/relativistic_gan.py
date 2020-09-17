@@ -225,7 +225,10 @@ for epoch in range(opt.n_epochs):
 		gen_associate = generator(torch.cat([base, z], dim=1))
 
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_associate), valid)
+		if opt.rel_avg_gan:
+		    g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
+		else:
+		    g_loss = adversarial_loss(fake_pred - real_pred, valid)
 
 		g_loss.backward()
 		optimizer_G.step()
