@@ -130,7 +130,7 @@ class Discriminator(nn.Module):
 
 		# The height and width of downsampled image
 		ds_size = 2*opt.vector_size
-		self.adv_layer = nn.Sequential(nn.Linear(32*ds_size, 100), nn.LeakyReLU(0.2, inplace=True), 
+		self.adv_layer = nn.Sequential(nn.Linear(32, 100), nn.LeakyReLU(0.2, inplace=True), 
 					       nn.Linear(100, 50), nn.LeakyReLU(0.2, inplace=True),
 					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
 
