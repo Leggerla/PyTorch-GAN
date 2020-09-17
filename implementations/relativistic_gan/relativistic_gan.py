@@ -73,9 +73,9 @@ class StockDataset(torch.utils.data.Dataset):
 		min = torch.min(array)
 		enum = array.shape[0]
 		for i in torch.arange(0, enum, step=window):
-			if enum - 2*i < window:
+			if enum - i < window:
 				break
-			res.append(array[i:2 * i + roll][:, 0])
+			res.append(array[i:i + roll][:, 0])
 		return 2 * (torch.stack(res) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
