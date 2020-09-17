@@ -138,7 +138,9 @@ class Discriminator(nn.Module):
 		print (base.shape, associate.shape)
 		out = torch.cat([base, associate], dim=1)[:, None]
 		out = self.model(out)
+		print (out.shape)
 		out = out.view(out.shape[0], -1)
+		print (out.shape)
 		validity = self.adv_layer(out)
 		return validity
 
@@ -200,7 +202,7 @@ for epoch in range(opt.n_epochs):
 		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
 		# Generate a batch of images
-		gen_associate = generator(base, z)
+		gen_associate = generator(real_base, z)
 
 		real_pred = discriminator(real_base, real_associate).detach()
 		fake_pred = discriminator(real_base, gen_associate)
