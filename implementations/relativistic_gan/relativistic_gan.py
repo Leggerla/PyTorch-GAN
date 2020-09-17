@@ -27,7 +27,7 @@ parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rat
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
+parser.add_argument("--latent_dim", type=int, default=96, help="dimensionality of the latent space")
 parser.add_argument("--vector_size", type=int, default=96*2, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
@@ -81,8 +81,8 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 
-		self.init_size = opt.vector_size // 4
-		self.l1 = nn.Sequential(nn.Linear(opt.vector_size, 128 * self.init_size))
+		self.init_size = (opt.vector_size + opt.latent_dim) // 4
+		self.l1 = nn.Sequential(nn.Linear(opt.vector_size + opt.latent_dim, 128 * self.init_size))
 
 		self.conv_blocks = nn.Sequential(
 			nn.BatchNorm1d(128),
@@ -184,8 +184,12 @@ for epoch in range(opt.n_epochs):
 		# ---------------------
 
 		optimizer_D.zero_grad()
+		
+		## Sample noise as generator input
+		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
-		gen_associate = generator(base)
+		# Generate a batch
+		gen_associate = generator(torch.cat([base, z]))
 		
 		# Predict validity
 		real_pred = discriminator(real_associate)
@@ -213,22 +217,13 @@ for epoch in range(opt.n_epochs):
 		optimizer_G.zero_grad()
 
 		## Sample noise as generator input
-		#z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
+		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
-		# Generate a batch of images
-		gen_associate = generator(base)
+		# Generate
+		gen_associate = generator(torch.cat([base, z]))
 
-		real_pred = discriminator(real_associate).detach()
-		fake_pred = discriminator(gen_associate)
-
-		if opt.rel_avg_gan:
-			real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
-			fake_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), fake)
-		else:
-			real_loss = adversarial_loss(real_pred - fake_pred, valid)
-			fake_loss = adversarial_loss(fake_pred - real_pred, fake)
-
-		g_loss = (real_loss + fake_loss) # todo /2?
+		# Loss measures generator's ability to fool the discriminator
+        	g_loss = adversarial_loss(discriminator(gen_associate), valid)
 
 		g_loss.backward()
 		optimizer_G.step()
