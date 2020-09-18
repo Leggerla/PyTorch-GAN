@@ -262,8 +262,8 @@ for epoch in range(opt.n_epochs):
 		sum_d_fake_loss.append(fake_loss.item())
 		sum_g_loss.append(g_loss.item())
 
-		sp_vix_real_corr = correlate(real_base.data.cpu(), real_associate.data.cpu(), 'same')
-		sp_vix_gen_corr = correlate(real_base.data.cpu(), gen_associate.data.cpu(), 'same')
+		sp_vix_real_corr = correlate(real_base.data[:, 1:].cpu(), real_associate.data[:, :-1].cpu(), 'same')
+		sp_vix_gen_corr = correlate(real_base.data[:, 1:].cpu(), gen_associate.data[:, :-1].cpu(), 'same')
 
 		corr_dist = np.linalg.norm(sp_vix_real_corr - sp_vix_gen_corr)
 		if corr_dist <= best_corr_dist:
