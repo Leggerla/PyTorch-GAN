@@ -41,7 +41,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def correlation(gen):
 	coor = []
 	for i in range(gen.shape[0]):
-		coor.append(torch.from_numpy(correlate(gen[i, :].cpu(), gen[i, :].cpu(), 'same')))/gen.shape[-1]))
+		coor.append(torch.from_numpy(correlate(gen[i, :].cpu(), gen[i, :].cpu(), 'same')/gen.shape[-1]))
 	return torch.stack(coor)
 
 
