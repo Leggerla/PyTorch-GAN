@@ -65,10 +65,11 @@ class StockDataset(torch.utils.data.Dataset):
 		'Generates one sample of data'
 		# Get base and associate vectors
 		X = self.base[index, :]
-		y = self.associate[index, :]
+		Y = self.associate[index, :]
 		z = self.spy[index, :]
+		w = self.start_points[index, :]
 
-		return X, y, z
+		return X, Y, z, w
 
 	def rolling_periods(self, start_points, spy_prices, window, roll):
 		base = []
