@@ -284,7 +284,7 @@ for epoch in range(opt.n_epochs):
 		torch.save(real_base.data, "charts/base.pt")
 		torch.save(real_associate.data, "charts/real.pt")
 		torch.save(gen_associate.data, "charts/gen.pt")
-		torch.save(gen_associate.data+start_points.data, "charts/gen_VIX.pt")
+		torch.save(gen_associate.data+start_points.cuda().data, "charts/gen_VIX.pt")
 		torch.save(spy, "charts/real_SPY.pt")
 		torch.save(sp_vix_real_corr, "charts/real_corr.pt")
 		torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
