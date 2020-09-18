@@ -263,6 +263,7 @@ for epoch in range(opt.n_epochs):
 			print('Correlation distance', epoch, best_corr_dist)
 			best_list.append(torch.tensor([epoch, best_corr_dist]))
 
+		torch.save(real_base.data, "charts/base.pt")
 		torch.save(real_associate.data, "charts/real.pt")
 		torch.save(gen_associate.data, "charts/gen.pt")
 		torch.save(sp_vix_real_corr, "charts/real_corr.pt")
@@ -282,6 +283,7 @@ for epoch in range(opt.n_epochs):
 		torch.save(d_fake_losses, 'd_fake_losses.pt')
 		torch.save(g_losses, 'g_losses.pt')
 
+torch.save(real_base.data, "charts/final_base.pt")
 torch.save(real_associate.data, "charts/final_real.pt")
 torch.save(gen_associate.data, "charts/final_gen.pt")
 torch.save(sp_vix_real_corr, "charts/final_real_corr.pt")
