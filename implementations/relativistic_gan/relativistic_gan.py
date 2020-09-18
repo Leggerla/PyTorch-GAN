@@ -180,6 +180,7 @@ for epoch in range(opt.n_epochs):
 	sum_d_real_loss = []
 	sum_d_fake_loss = []
 	sum_g_loss = []
+	corr_dist = 0
 	for i, (base, associate) in enumerate(dataloader):
 
 		base, associate = base.to(device), associate.to(device)
@@ -255,44 +256,21 @@ for epoch in range(opt.n_epochs):
 		sp_vix_real_corr = correlate(real_base.data[:, 1:].cpu(), real_associate.data[:, :-1].cpu(), 'same')
 		sp_vix_gen_corr = correlate(real_base.data[:, 1:].cpu(), gen_associate.data[:, :-1].cpu(), 'same')
 
-		corr_dist = np.linalg.norm(sp_vix_real_corr - sp_vix_gen_corr)
-		if corr_dist <= best_corr_dist:
-			if corr_dist < best_corr_dist:
-				best_corr_dist = corr_dist.item()
-				print('Correlation distance', epoch, best_corr_dist)
-				batch_num = epoch * opt.batch_size + i
-				best_list.append(torch.tensor([batch_num, best_corr_dist]))
+		corr_dist += np.linalg.norm(sp_vix_real_corr - sp_vix_gen_corr)
+		
+	if corr_dist <= best_corr_dist:
+		if corr_dist < best_corr_dist:
+			best_corr_dist = corr_dist.item()
+			print('Correlation distance', epoch, best_corr_dist)
+			best_list.append(torch.tensor([epoch, best_corr_dist]))
 
-			torch.save(real_associate.data, "charts/real.pt")
-			torch.save(gen_associate.data, "charts/gen.pt")
-			torch.save(sp_vix_real_corr, "charts/real_corr.pt")
-			torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
-			torch.save(generator.state_dict(), "generator.pt")
-			torch.save(discriminator.state_dict(), "discriminator.pt")
-			torch.save(torch.stack(best_list), "correlation distance.pt")
-
-		'''matrix_autocorr = correlation(gen_associate.data[:, 0, :])
-		#mask = torch.logical_and(torch.mean(gen_associate.data[:, 0, :], dim=0) > 0.3, torch.mean(gen_associate.data[:, 0, :], dim=0) < 0.5)
-		#mask = torch.logical_and(torch.std(gen_associate.data[:, 0, :], dim=0) > 0.02, mask)
-		mask = torch.logical_and(matrix_autocorr >= -0.01, matrix_autocorr <= 0.1)
-		#autocorr = torch.sum(mask).float()
-		autocorr = torch.sum(mask).float()
-		if autocorr >= best_autocorrelation:
-			if autocorr > best_autocorrelation:
-				best_autocorrelation = autocorr.item()
-				print('Autocorrelation', epoch, best_autocorrelation)
-			torch.save(real_associate.data, "charts/real.pt")
-			torch.save(gen_associate.data, "charts/gen.pt")
-			torch.save(matrix_autocorr, "charts/autocorr.pt")
-
-			torch.save(generator.state_dict(), "generator.pt")
-			torch.save(discriminator.state_dict(), "discriminator.pt")'''
-
-		similarity = torch.sum(torch.mul(real_associate.data, gen_associate.data))
-		if similarity > best_similarity:
-			best_similarity = similarity
-			torch.save(real_associate.data, "charts/similarity_real.pt")
-			torch.save(gen_associate.data, "charts/similarity_gen.pt")
+		torch.save(real_associate.data, "charts/real.pt")
+		torch.save(gen_associate.data, "charts/gen.pt")
+		torch.save(sp_vix_real_corr, "charts/real_corr.pt")
+		torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
+		torch.save(generator.state_dict(), "generator.pt")
+		torch.save(discriminator.state_dict(), "discriminator.pt")
+		torch.save(torch.stack(best_list), "correlation distance.pt")
 
 	d_real_losses[epoch] = torch.mean(torch.tensor(sum_d_real_loss))
 	d_fake_losses[epoch] = torch.mean(torch.tensor(sum_d_fake_loss))
