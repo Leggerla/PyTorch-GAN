@@ -78,7 +78,7 @@ class StockDataset(torch.utils.data.Dataset):
 				break
 			base.append(torch.cat([self.associate_timeseries[i], self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
-		return base, 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1
+		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
 class Generator(nn.Module):
