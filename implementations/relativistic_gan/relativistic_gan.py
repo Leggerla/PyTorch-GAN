@@ -79,7 +79,7 @@ class StockDataset(torch.utils.data.Dataset):
 				break
 			base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
-		return torch.stack(base), torch.stack(associate) #2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1
+		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
 class Generator(nn.Module):
@@ -101,7 +101,8 @@ class Generator(nn.Module):
 			*generator_block(16, 8),
 			*generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
 			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
-			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
+			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)),
+			nn.Tanh())
 
 	def forward(self, base, z):
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
