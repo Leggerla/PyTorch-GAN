@@ -55,7 +55,7 @@ class StockDataset(torch.utils.data.Dataset):
 		self.associate_timeseries = torch.load(data_path + 'associate.pt')
 		start_points = torch.load(data_path + 'start_points.pt')
 		spy_prices = torch.load(data_path + 'SPY_prices.pt')
-		self.base, self.associate, self.spy = self.rolling_periods(start_points, spy_prices, window, roll)
+		self.base, self.associate, self.spy, self.start_points = self.rolling_periods(start_points, spy_prices, window, roll)
 
 	def __len__(self):
 		'Denotes the total number of samples'
@@ -74,6 +74,7 @@ class StockDataset(torch.utils.data.Dataset):
 		base = []
 		associate = []
 		spy = []
+		vix_open = []
 		max = torch.max(self.associate_timeseries)
 		min = torch.min(self.associate_timeseries)
 		enum = self.associate_timeseries.shape[0]
@@ -83,7 +84,8 @@ class StockDataset(torch.utils.data.Dataset):
 			base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
 			spy.append(spy_prices[i:i + window+1])
-		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy)
+			vix_open.append(start_points[i:i + window+1])
+		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open)
 
 
 class Generator(nn.Module):
@@ -184,7 +186,7 @@ for epoch in range(opt.n_epochs):
 	sum_d_fake_loss = []
 	sum_g_loss = []
 	corr_dist = 0
-	for i, (base, associate, spy) in enumerate(dataloader):
+	for i, (base, associate, spy, start_points) in enumerate(dataloader):
 
 		base, associate = base.to(device), associate.to(device)
 		# Adversarial ground truths
@@ -281,7 +283,7 @@ for epoch in range(opt.n_epochs):
 		torch.save(real_base.data, "charts/base.pt")
 		torch.save(real_associate.data, "charts/real.pt")
 		torch.save(gen_associate.data, "charts/gen.pt")
-		torch.save(gen_associate.data+real_base.data[:, 0], "charts/gen_VIX.pt")
+		torch.save(gen_associate.data+start_points.data, "charts/gen_VIX.pt")
 		torch.save(spy, "charts/real_SPY.pt")
 		torch.save(sp_vix_real_corr, "charts/real_corr.pt")
 		torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
