@@ -79,7 +79,7 @@ class StockDataset(torch.utils.data.Dataset):
 			print (i)
 			if enum < i + window + 1:
 				break
-			print (torch.stack([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
+			print (torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 			base.append(torch.stack([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window].unsqueeze(0)], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
 		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1
