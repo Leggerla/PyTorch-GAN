@@ -144,7 +144,6 @@ class Discriminator(nn.Module):
 
 # Loss function
 adversarial_loss = torch.nn.BCEWithLogitsLoss().to(device)
-crossentropy_loss = torch.nn.CrossEntropyLoss().to(device)
 
 # Initialize generator and discriminator
 generator = Generator().to(device)
@@ -160,7 +159,7 @@ dataloader = torch.utils.data.DataLoader(
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
-optimizer_D = torch.optim.Adam(generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
+optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
 
