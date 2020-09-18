@@ -50,9 +50,10 @@ class StockDataset(torch.utils.data.Dataset):
 
 	def __init__(self, data_path):
 		'Initialization'
-		window, roll = opt.vector_size, opt.vector_size
-		self.base = self.rolling_periods(torch.load(data_path + 'base.pt'), window, roll)
-		self.associate = self.rolling_periods(torch.load(data_path + 'associate.pt'), window, roll)
+		window, roll = opt.vector_size-1, opt.vector_size-1
+		self.base_timeseries = torch.load(data_path + 'base.pt')
+		self.associate_timeseries = torch.load(data_path + 'associate.pt')
+		self.base, self.associate = self.rolling_periods(window, roll)
 
 	def __len__(self):
 		'Denotes the total number of samples'
@@ -66,16 +67,18 @@ class StockDataset(torch.utils.data.Dataset):
 
 		return X, y
 
-	def rolling_periods(self, array, window, roll):
-		res = []
-		max = torch.max(array)
-		min = torch.min(array)
-		enum = array.shape[0]
+	def rolling_periods(self, window, roll):
+		base = []
+		associate = []
+		max = torch.max(self.associate_timeseries)
+		min = torch.min(self.associate_timeseries)
+		enum = self.associate_timeseries.shape[0]
 		for i in torch.arange(0, enum, step=roll):
-			if enum < i + window:
+			if enum < i + window + 1:
 				break
-			res.append(array[i:i + window])
-		return 2 * (torch.stack(res) - min + 1e-8) / (max - min + 1e-8) - 1
+			base.append(torch.cat([self.associate_timeseries[i], self.base_timeseries[i:i + window]], dim=0))
+			associate.append(self.associate_timeseries[i:i + window+1])
+		return base, 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1
 
 
 class Generator(nn.Module):
