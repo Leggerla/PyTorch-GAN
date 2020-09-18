@@ -55,7 +55,7 @@ class StockDataset(torch.utils.data.Dataset):
 		self.associate_timeseries = torch.load(data_path + 'associate.pt')
 		start_points = torch.load(data_path + 'start_points.pt')
 		spy_prices = torch.load(data_path + 'SPY_prices.pt')
-		self.base, self.associate = self.rolling_periods(start_points, spy_prices, window, roll)
+		self.base, self.associate, self.spy = self.rolling_periods(start_points, spy_prices, window, roll)
 
 	def __len__(self):
 		'Denotes the total number of samples'
@@ -66,8 +66,9 @@ class StockDataset(torch.utils.data.Dataset):
 		# Get base and associate vectors
 		X = self.base[index, :]
 		y = self.associate[index, :]
+		z = self.spy[index, :]
 
-		return X, y
+		return X, y, z
 
 	def rolling_periods(self, start_points, spy_prices, window, roll):
 		base = []
