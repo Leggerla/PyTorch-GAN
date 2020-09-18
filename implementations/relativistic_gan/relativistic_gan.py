@@ -201,7 +201,7 @@ for epoch in range(opt.n_epochs):
 		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
 
 		# Generate a batch of images
-		gen_associate = generator(base, z)
+		gen_associate = generator(real_base, z)
 
 		real_pred = discriminator(real_base, real_associate).detach()
 		fake_pred = discriminator(real_base, gen_associate)
