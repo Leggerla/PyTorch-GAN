@@ -71,6 +71,7 @@ class StockDataset(torch.utils.data.Dataset):
 	def rolling_periods(self, start_points, window, roll):
 		base = []
 		associate = [] 
+		print (self.associate_timeseries)
 		max = torch.max(self.associate_timeseries)
 		min = torch.min(self.associate_timeseries)
 		enum = self.associate_timeseries.shape[0]
