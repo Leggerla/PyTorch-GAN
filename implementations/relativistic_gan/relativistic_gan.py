@@ -74,9 +74,7 @@ class StockDataset(torch.utils.data.Dataset):
 		max = torch.max(self.associate_timeseries)
 		min = torch.min(self.associate_timeseries)
 		enum = self.associate_timeseries.shape[0]
-		print (enum)
 		for i in torch.arange(0, enum, step=roll):
-			print (i)
 			if enum < i + window + 1:
 				break
 			base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
