@@ -21,6 +21,7 @@ os.makedirs("charts", exist_ok=True)
 parser = argparse.ArgumentParser()
 parser.add_argument("--data_path", type=str, default="./", help="folder with all the data")
 parser.add_argument("--n_epochs", type=int, default=200, help="number of epochs of training")
+parser.add_argument("--n_iters", type=int, default=5, help="number of iterations to train D")
 parser.add_argument("--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rate")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
@@ -232,7 +233,7 @@ for epoch in range(opt.n_epochs):
 		g_loss.backward()
 		optimizer_G.step()
 
-		for n in range(10):
+		for n in range(opt.n_iters):
 
 			# ---------------------
 			#  Train Discriminator
