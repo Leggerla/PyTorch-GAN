@@ -27,7 +27,6 @@ parser.add_argument("--lr", type=float, default=0.0002, help="adam: learning rat
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
 parser.add_argument("--vector_size", type=int, default=100, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
@@ -138,7 +137,7 @@ class Discriminator(nn.Module):
 			*discriminator_block(32, 32)
 		)
 
-		self.adv_layer = nn.Sequential(nn.Linear(32, 100), nn.LeakyReLU(0.2, inplace=True), 
+		self.adv_layer = nn.Sequential(nn.Linear(32*(opt.vector_size//100), 100), nn.LeakyReLU(0.2, inplace=True), 
 					       nn.Linear(100, 50), nn.LeakyReLU(0.2, inplace=True),
 					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
 
@@ -205,7 +204,7 @@ for epoch in range(opt.n_epochs):
 		optimizer_G.zero_grad()
 
 		# Sample noise as generator input
-		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.latent_dim))))
+		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size))))
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
