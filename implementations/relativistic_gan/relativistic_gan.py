@@ -31,6 +31,8 @@ parser.add_argument("--vector_size", type=int, default=100, help="size of each i
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
 parser.add_argument("--rel_avg_gan", action="store_true", help="relativistic average GAN instead of standard")
+parser.add_argument("--HOLC", type=bool, default=False, help="whether data is OHLC")
+
 opt = parser.parse_args()
 print(opt)
 
@@ -107,13 +109,18 @@ class Generator(nn.Module):
 			*generator_block(16, 8),
 			*generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
 			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
-			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)),
-			nn.Tanh())
+			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
+		if opt.OHLC == True:
+			self.linear = nn.Linear(4*vector_size, vector_size)
+		self.Tanh = nn.Tanh()
 
 	def forward(self, base, z):
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		out = out[:, None]	
 		out = self.model(out)
+		if opt.OHLC == True:
+			out = self.linear(out)
+		out = self.Tanh(out)
 		out = torch.squeeze(out)
 		return out
 
