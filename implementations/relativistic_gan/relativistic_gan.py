@@ -128,7 +128,6 @@ class Generator(nn.Module):
 		if opt.OHLC == True:
 			out = self.linear(out)
 		out = self.Tanh(out)
-		print (out.shape)
 		return out
 
 
@@ -157,11 +156,8 @@ class Discriminator(nn.Module):
 
 	def forward(self, base, associate):
 		out = torch.cat([base, associate], dim=1)[:, None, :]
-		print (out.shape)
 		out = self.model(out)
-		print (out.shape)
 		out = out.view(out.shape[0], -1)
-		print (out.shape)
 		validity = self.adv_layer(out)
 		return validity
 
