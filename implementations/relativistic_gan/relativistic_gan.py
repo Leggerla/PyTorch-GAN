@@ -31,7 +31,7 @@ parser.add_argument("--vector_size", type=int, default=100, help="size of each i
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
 parser.add_argument("--rel_avg_gan", action="store_true", help="relativistic average GAN instead of standard")
-parser.add_argument("--HOLC", type=bool, default=False, help="whether data is OHLC")
+parser.add_argument("--OHLC", type=bool, default=False, help="whether data is OHLC")
 
 opt = parser.parse_args()
 print(opt)
