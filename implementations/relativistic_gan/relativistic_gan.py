@@ -82,11 +82,17 @@ class StockDataset(torch.utils.data.Dataset):
 		enum = self.associate_timeseries.shape[0]
 		for i in torch.arange(0, enum, step=roll):
 			if enum < i + window + 1:
-				break
-			base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
+				break	
+			if not opt.OHLC:
+				base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
 			spy.append(spy_prices[i:i + window+1])
 			vix_open.append(start_points[i:i + window+1])
+		if opt.OHLC:
+			window = 4*(window+1)-1
+			roll = 4*(roll+1)-1
+			for i in torch.arange(0, enum, step=roll):
+				base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open)
 
 
@@ -111,7 +117,7 @@ class Generator(nn.Module):
 			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
 			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
 		if opt.OHLC == True:
-			self.linear = nn.Linear(opt.vector_size, opt.vector_size//4)
+			self.linear = nn.Linear(4*opt.vector_size, opt.vector_size)
 		self.Tanh = nn.Tanh()
 
 	def forward(self, base, z):
