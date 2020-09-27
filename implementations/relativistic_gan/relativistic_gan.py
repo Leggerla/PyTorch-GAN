@@ -220,8 +220,8 @@ for epoch in range(opt.n_epochs):
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
 
-		real_pred = discriminator(real_base, real_associate).detach()
-		fake_pred = discriminator(real_base, gen_associate)
+		real_pred = discriminator(real_base[3::4], real_associate).detach()
+		fake_pred = discriminator(real_base[3::4], gen_associate)
 
 		if opt.rel_avg_gan:
 		    g_loss = adversarial_loss(fake_pred - real_pred.mean(0, keepdim=True), valid)
