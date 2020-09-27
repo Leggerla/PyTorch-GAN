@@ -221,7 +221,10 @@ for epoch in range(opt.n_epochs):
 		optimizer_G.zero_grad()
 
 		# Sample noise as generator input
-		z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size))))
+		if opt.OHLC:
+			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], 4*opt.vector_size))))
+		else:
+			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size))))
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
