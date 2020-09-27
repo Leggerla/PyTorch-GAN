@@ -118,7 +118,9 @@ class Generator(nn.Module):
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		out = out[:, None]	
 		out = self.model(out)
+		print (out.shape)
 		out = torch.squeeze(out)
+		print (out.shape)
 		if opt.OHLC == True:
 			out = self.linear(out)
 		out = self.Tanh(out)
