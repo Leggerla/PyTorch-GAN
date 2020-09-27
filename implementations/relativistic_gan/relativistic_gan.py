@@ -118,10 +118,10 @@ class Generator(nn.Module):
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		out = out[:, None]	
 		out = self.model(out)
+		out = torch.squeeze(out)
 		if opt.OHLC == True:
 			out = self.linear(out)
 		out = self.Tanh(out)
-		out = torch.squeeze(out)
 		return out
 
 
@@ -144,7 +144,7 @@ class Discriminator(nn.Module):
 			*discriminator_block(32, 32)
 		)
 
-		self.adv_layer = nn.Sequential(nn.Linear(32*(opt.vector_size//100), 100), nn.LeakyReLU(0.2, inplace=True), 
+		self.adv_layer = nn.Sequential(nn.Linear(32, 100), nn.LeakyReLU(0.2, inplace=True), 
 					       nn.Linear(100, 50), nn.LeakyReLU(0.2, inplace=True),
 					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
 
