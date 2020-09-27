@@ -92,7 +92,7 @@ class StockDataset(torch.utils.data.Dataset):
 			window = 4*(window+1)
 			roll = 4*(roll+1)
 			for i in torch.arange(0, enum, step=roll):
-				base.append(self.base_timeseries[i:i + window])
+				base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open)
 
 
@@ -117,7 +117,7 @@ class Generator(nn.Module):
 			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
 			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
 		if opt.OHLC == True:
-			self.linear = nn.Linear(4*opt.vector_size, opt.vector_size)
+			self.linear = nn.Linear(4*opt.vector_size+1, opt.vector_size)
 		self.Tanh = nn.Tanh()
 
 	def forward(self, base, z):
@@ -218,9 +218,9 @@ for epoch in range(opt.n_epochs):
 
 		# Sample noise as generator input
 		if opt.OHLC:
-			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], 4*opt.vector_size))))
+			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], 4*opt.vector_size+1))))
 		else:
-			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size))))
+			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size+1))))
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
