@@ -111,7 +111,7 @@ class Generator(nn.Module):
 			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
 			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
 		if opt.OHLC == True:
-			self.linear = nn.Linear(4*vector_size, vector_size)
+			self.linear = nn.Linear(4*opt.vector_size, opt.vector_size)
 		self.Tanh = nn.Tanh()
 
 	def forward(self, base, z):
