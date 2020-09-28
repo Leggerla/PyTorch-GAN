@@ -187,7 +187,7 @@ optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt
 
 Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
 
-dates = torch.load(data_path + 'dates.pt')
+dates = torch.load(opt.data_path + 'dates.pt')
 
 # ----------
 #  Training
