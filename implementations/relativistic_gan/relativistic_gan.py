@@ -56,7 +56,8 @@ class StockDataset(torch.utils.data.Dataset):
 		self.associate_timeseries = torch.load(data_path + 'associate.pt')
 		start_points = torch.load(data_path + 'start_points.pt')
 		spy_prices = torch.load(data_path + 'SPY_prices.pt')
-		self.base, self.associate, self.spy, self.start_points = self.rolling_periods(start_points, spy_prices, window, roll)
+		close_dates = torch.load(data_path + 'dates.pt')
+		self.base, self.associate, self.spy, self.start_points, self.dates = self.rolling_periods(start_points, spy_prices, close_dates, window, roll)
 
 	def __len__(self):
 		'Denotes the total number of samples'
@@ -69,14 +70,16 @@ class StockDataset(torch.utils.data.Dataset):
 		Y = self.associate[index, :]
 		z = self.spy[index, :]
 		w = self.start_points[index, :]
+		date = self.dates[index]
 
-		return X, Y, z, w
+		return X, Y, z, w, date
 
-	def rolling_periods(self, start_points, spy_prices, window, roll):
+	def rolling_periods(self, start_points, spy_prices, close_dates, window, roll):
 		base = []
 		associate = []
 		spy = []
 		vix_open = []
+		dates = []
 		max = torch.max(self.associate_timeseries)
 		min = torch.min(self.associate_timeseries)
 		enum = self.associate_timeseries.shape[0]
@@ -88,12 +91,13 @@ class StockDataset(torch.utils.data.Dataset):
 			associate.append(self.associate_timeseries[i:i + window+1])
 			spy.append(spy_prices[i:i + window+1])
 			vix_open.append(start_points[i:i + window+1])
+			dates.append(close_dates[i:i + window+1])
 		if opt.OHLC:
 			window = 4*(window+1)
 			roll = 4*(roll+1)
 			for i in torch.arange(0, enum, step=roll):
 				base.append(torch.cat([start_points[i//4].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
-		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open)
+		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open), torch.stack(dates)
 
 
 class Generator(nn.Module):
@@ -199,7 +203,7 @@ for epoch in range(opt.n_epochs):
 	sum_d_fake_loss = []
 	sum_g_loss = []
 	corr_dist = 0
-	for i, (base, associate, spy, start_points) in enumerate(dataloader):
+	for i, (base, associate, spy, start_points, dates) in enumerate(dataloader):
 
 		base, associate = base.to(device), associate.to(device)
 		# Adversarial ground truths
@@ -301,6 +305,7 @@ for epoch in range(opt.n_epochs):
 		torch.save(gen_associate.data, "charts/gen.pt")
 		torch.save(start_points.cuda().data, "charts/VIX_open.pt")
 		torch.save(spy, "charts/real_SPY.pt")
+		torch.save(dates.cuda().data, "charts/dates.pt")
 		torch.save(sp_vix_real_corr, "charts/real_corr.pt")
 		torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
 		torch.save(generator.state_dict(), "generator.pt")
@@ -321,8 +326,9 @@ for epoch in range(opt.n_epochs):
 torch.save(real_base.data, "charts/final_base.pt")
 torch.save(real_associate.data, "charts/final_real.pt")
 torch.save(gen_associate.data, "charts/final_gen.pt")
-torch.save(start_points.cuda().data, "charts/VIX_open.pt")
+torch.save(start_points.cuda().data, "charts/final_VIX_open.pt")
 torch.save(spy, "charts/final_real_SPY.pt")
+torch.save(dates.cuda().data, "charts/final_dates.pt")
 torch.save(sp_vix_real_corr, "charts/final_real_corr.pt")
 torch.save(sp_vix_gen_corr, "charts/final_gen_corr.pt")
 torch.save(generator.state_dict(), "final_generator.pt")
