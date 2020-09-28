@@ -98,8 +98,8 @@ class StockDataset(torch.utils.data.Dataset):
 			for i in torch.arange(0, enum, step=roll):
 				base.append(torch.cat([start_points[i//4].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 				
-		print (np.stack(dates))
-		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open), np.stack(dates)
+		print (dates)
+		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open), dates
 
 
 class Generator(nn.Module):
