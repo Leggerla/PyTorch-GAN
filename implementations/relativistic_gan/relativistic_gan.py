@@ -56,7 +56,6 @@ class StockDataset(torch.utils.data.Dataset):
 		self.associate_timeseries = torch.load(data_path + 'associate.pt')
 		start_points = torch.load(data_path + 'start_points.pt')
 		spy_prices = torch.load(data_path + 'SPY_prices.pt')
-		self.dates = torch.load(data_path + 'dates.pt')
 		self.base, self.associate, self.spy, self.start_points, self.indices = self.rolling_periods(start_points, spy_prices, window, roll)
 
 	def __len__(self):
@@ -70,9 +69,9 @@ class StockDataset(torch.utils.data.Dataset):
 		Y = self.associate[index, :]
 		z = self.spy[index, :]
 		w = self.start_points[index, :]
-		dates = self.dates[self.indices[index]]
+		i = self.indices[index]
 
-		return X, Y, z, w, dates.to_numpy(dtype=str)
+		return X, Y, z, w, i
 
 	def rolling_periods(self, start_points, spy_prices, window, roll):
 		base = []
@@ -188,6 +187,8 @@ optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt
 
 Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
 
+dates = torch.load(data_path + 'dates.pt')
+
 # ----------
 #  Training
 # ----------
@@ -204,7 +205,7 @@ for epoch in range(opt.n_epochs):
 	sum_d_fake_loss = []
 	sum_g_loss = []
 	corr_dist = 0
-	for i, (base, associate, spy, start_points, dates) in enumerate(dataloader):
+	for i, (base, associate, spy, start_points, indices) in enumerate(dataloader):
 
 		base, associate = base.to(device), associate.to(device)
 		# Adversarial ground truths
@@ -306,7 +307,7 @@ for epoch in range(opt.n_epochs):
 		torch.save(gen_associate.data, "charts/gen.pt")
 		torch.save(start_points.cuda().data, "charts/VIX_open.pt")
 		torch.save(spy, "charts/real_SPY.pt")
-		torch.save(dates, "charts/dates.pt")
+		torch.save(dates[indices], "charts/dates.pt")
 		torch.save(sp_vix_real_corr, "charts/real_corr.pt")
 		torch.save(sp_vix_gen_corr, "charts/gen_corr.pt")
 		torch.save(generator.state_dict(), "generator.pt")
@@ -329,7 +330,7 @@ torch.save(real_associate.data, "charts/final_real.pt")
 torch.save(gen_associate.data, "charts/final_gen.pt")
 torch.save(start_points.cuda().data, "charts/final_VIX_open.pt")
 torch.save(spy, "charts/final_real_SPY.pt")
-torch.save(dates, "charts/final_dates.pt")
+torch.save(dates[indices], "charts/final_dates.pt")
 torch.save(sp_vix_real_corr, "charts/final_real_corr.pt")
 torch.save(sp_vix_gen_corr, "charts/final_gen_corr.pt")
 torch.save(generator.state_dict(), "final_generator.pt")
