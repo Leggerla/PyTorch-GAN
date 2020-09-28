@@ -72,7 +72,7 @@ class StockDataset(torch.utils.data.Dataset):
 		w = self.start_points[index, :]
 		dates = self.dates[self.indices[index]]
 
-		return X, Y, z, w, dates
+		return X, Y, z, w, dates.to_numpy(dtype=str)
 
 	def rolling_periods(self, start_points, spy_prices, window, roll):
 		base = []
