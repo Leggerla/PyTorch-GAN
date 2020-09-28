@@ -91,7 +91,7 @@ class StockDataset(torch.utils.data.Dataset):
 			associate.append(self.associate_timeseries[i:i + window+1])
 			spy.append(spy_prices[i:i + window+1])
 			vix_open.append(start_points[i:i + window+1])
-			dates.append(close_dates[i:i + window+1].to_numpy())
+			dates.append(close_dates[i:i + window+1].to_numpy(dtype=str))
 		if opt.OHLC:
 			window = 4*(window+1)
 			roll = 4*(roll+1)
