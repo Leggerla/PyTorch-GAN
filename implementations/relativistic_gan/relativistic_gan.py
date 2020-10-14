@@ -137,11 +137,15 @@ class Generator(nn.Module):
 			base = base[:, None, :]
 		out = torch.cat([base, z], dim=1)
 		out = out[:, None]
+		print (out.shape)
 		out = self.model(out)
+		print (out.shape)
 		out = torch.squeeze(out)
+		print (out.shape)
 		if opt.OHLC == True:
 			out = self.linear(out)
 		out = self.Tanh(out)
+		print (out.shape)
 		return out
 
 
@@ -169,15 +173,11 @@ class Discriminator(nn.Module):
 					       nn.Linear(50, 1), nn.LeakyReLU(0.2, inplace=True))
 
 	def forward(self, base, associate):
-		print (base.shape, associate.shape)
 		out = torch.cat([base, associate], dim=-1)
 		if opt.channels == 1:
 			out = out[:, None, :]
-		print (out.shape)
 		out = self.model(out)
-		print (out.shape)
 		out = out.view(out.shape[0], -1)
-		print (out.shape)
 		validity = self.adv_layer(out)
 		return validity
 
