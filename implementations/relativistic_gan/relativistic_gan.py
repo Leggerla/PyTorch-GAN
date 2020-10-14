@@ -154,7 +154,7 @@ class Discriminator(nn.Module):
 			return block
 
 		self.model = nn.Sequential(
-			*discriminator_block(opt.channels, 64),
+			*discriminator_block(1, 64),
 			*discriminator_block(64, 64),
 			*discriminator_block(64, 64),
 			*discriminator_block(64, 64),
