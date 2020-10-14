@@ -86,9 +86,9 @@ class StockDataset(torch.utils.data.Dataset):
 			if enum < i + window + 1:
 				break	
 			if not opt.OHLC:
-				print (start_points[i].unsqueeze(0).shape)
+				print (start_points[i].unsqueeze(0).repeat(1, 4).shape)
 				print (self.base_timeseries[i:i + window].shape)
-				base.append(torch.cat([start_points[i].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
+				base.append(torch.cat([start_points[i].unsqueeze(0).repeat(1, 4) , self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
 			spy.append(spy_prices[i:i + window+1])
 			vix_open.append(start_points[i:i + window+1])
