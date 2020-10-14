@@ -65,8 +65,12 @@ class StockDataset(torch.utils.data.Dataset):
 	def __getitem__(self, index):
 		'Generates one sample of data'
 		# Get base and associate vectors
-		X = self.base[index, :].permute(1, 0)
-		Y = self.associate[index, :].permute(1, 0)
+		X = self.base[index, :]
+		if opt.channels > 1:
+			X = X.permute(1, 0)
+		Y = self.associate[index, :]
+		if opt.channels > 1:
+			Y = Y.permute(1, 0)
 		z = self.spy[index, :]
 		w = self.start_points[index, :]
 		i = self.indices[index]
