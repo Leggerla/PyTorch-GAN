@@ -86,9 +86,7 @@ class StockDataset(torch.utils.data.Dataset):
 			if enum < i + window + 1:
 				break	
 			if not opt.OHLC:
-				print (start_points[i].unsqueeze(0).repeat(1, 4).shape)
-				print (self.base_timeseries[i:i + window].shape)
-				base.append(torch.cat([start_points[i].unsqueeze(0).repeat(1, 4) , self.base_timeseries[i:i + window]], dim=0))
+				base.append(torch.cat([start_points[i].unsqueeze(0).repeat(1, opt.channels) , self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
 			spy.append(spy_prices[i:i + window+1])
 			vix_open.append(start_points[i:i + window+1])
@@ -228,7 +226,7 @@ for epoch in range(opt.n_epochs):
 		if opt.OHLC:
 			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], 4*opt.vector_size+1))))
 		else:
-			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size))))
+			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.channels, opt.vector_size))))
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
