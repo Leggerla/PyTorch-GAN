@@ -124,7 +124,7 @@ class Generator(nn.Module):
 			*generator_block(128, 64),
 			*generator_block(64, 32),
 			*generator_block(32, 16),
-			*generator_block(16, 8),
+			*generator_block(16, 8, padding=(2, 2, last_pad, 0)),
 			*generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1, last_pad, 1)),
 			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, last_pad, 1)),
 			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
