@@ -86,7 +86,10 @@ class StockDataset(torch.utils.data.Dataset):
 			if enum < i + window + 1:
 				break	
 			if not opt.OHLC:
-				base.append(torch.cat([start_points[i].unsqueeze(0).repeat(1, opt.channels) , self.base_timeseries[i:i + window]], dim=0))
+				if opt.channels > 1:
+					base.append(torch.cat([start_points[i].unsqueeze(0).repeat(1, opt.channels), self.base_timeseries[i:i + window]], dim=0))
+				else:
+					base.append(torch.cat([start_points[i].unsqueeze(0), self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
 			spy.append(spy_prices[i:i + window+1])
 			vix_open.append(start_points[i:i + window+1])
@@ -130,6 +133,8 @@ class Generator(nn.Module):
 		print (out.shape)
 		if opt.channels == 1:
 			out = out[:, None]
+		else:
+			out = out.permute(
 		print (out.shape)
 		out = self.model(out)
 		print (out.shape)
