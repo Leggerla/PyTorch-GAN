@@ -133,8 +133,8 @@ class Generator(nn.Module):
 		print (out.shape)
 		if opt.channels == 1:
 			out = out[:, None]
-		else:
-			out = out.permute(
+		'''else:
+			out = out.permute('''
 		print (out.shape)
 		out = self.model(out)
 		print (out.shape)
