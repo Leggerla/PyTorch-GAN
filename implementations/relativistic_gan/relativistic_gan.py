@@ -128,7 +128,8 @@ class Generator(nn.Module):
 		print (base.shape, z.shape)
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		print (out.shape)
-		out = out[:, None]
+		if opt.channels == 1:
+			out = out[:, None]
 		print (out.shape)
 		out = self.model(out)
 		print (out.shape)
