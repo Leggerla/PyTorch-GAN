@@ -116,7 +116,7 @@ class Generator(nn.Module):
 				 nn.BatchNorm2d(out_filters),nn.LeakyReLU(0.2, inplace=True)]
 			return block
 
-		last_pad = 0 if opt.channels == 1 else 1
+		last_pad = 1 if opt.channels == 1 else 0
 		self.model = nn.Sequential(
 			*generator_block(1, 512),
 			*generator_block(512, 256),
@@ -126,8 +126,8 @@ class Generator(nn.Module):
 			*generator_block(32, 16),
 			*generator_block(16, 8),
 			*generator_block(8, 4, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
-			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, 1, 1)),
-			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, last_pad, 0)))
+			*generator_block(4, 2, kernel_size=(3, 3), padding=(1, 1, last_pad, 1)),
+			*generator_block(2, 1, kernel_size=(2, 1), padding=(0, 0, 0, 0)))
 		if opt.OHLC == True:
 			self.linear = nn.Linear(4*opt.vector_size+1, opt.vector_size)
 		self.Tanh = nn.Tanh()
