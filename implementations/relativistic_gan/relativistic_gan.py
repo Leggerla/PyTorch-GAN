@@ -227,7 +227,10 @@ for epoch in range(opt.n_epochs):
 		if opt.OHLC:
 			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], 4*opt.vector_size+1))))
 		else:
-			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.channels, opt.vector_size))))
+			if opt.channels > 1:
+				z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size, opt.channels))))
+			else:
+				z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size))))
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
