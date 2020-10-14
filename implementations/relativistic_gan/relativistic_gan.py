@@ -129,7 +129,9 @@ class Generator(nn.Module):
 
 	def forward(self, base, z):
 		print (base.shape, z.shape)
-		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
+		if opt.channels == 1:
+			base = base[:, None, :]
+		out = torch.cat([base, z], dim=1)
 		print (out.shape)
 		if opt.channels == 1:
 			out = out[:, None]
@@ -238,10 +240,7 @@ for epoch in range(opt.n_epochs):
 		if opt.OHLC:
 			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], 4*opt.vector_size+1))))
 		else:
-			if opt.channels > 1:
-				z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size, opt.channels))))
-			else:
-				z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.vector_size))))
+			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.channels, opt.vector_size))))
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
