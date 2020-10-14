@@ -137,8 +137,7 @@ class Generator(nn.Module):
 			base = base[:, None, :]
 		out = torch.cat([base, z], dim=1)
 		print (out.shape)
-		if opt.channels == 1:
-			out = out[:, None]
+		out = out[:, None]
 		'''else:
 			out = out.permute('''
 		print (out.shape)
