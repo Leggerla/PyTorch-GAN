@@ -170,7 +170,9 @@ class Discriminator(nn.Module):
 
 	def forward(self, base, associate):
 		print (base.shape, associate.shape)
-		out = torch.cat([base, associate], dim=1)[:, None, :]
+		out = torch.cat([base, associate], dim=1)
+		if opt.channels == 1:
+			out = out[:, None, :]
 		print (out.shape)
 		out = self.model(out)
 		print (out.shape)
