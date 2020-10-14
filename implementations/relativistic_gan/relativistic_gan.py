@@ -125,6 +125,7 @@ class Generator(nn.Module):
 		self.Tanh = nn.Tanh()
 
 	def forward(self, base, z):
+		print (base.shape, z.shape)
 		out = torch.cat([base[:, None, :], z[:, None, :]], dim=1)
 		out = out[:, None]	
 		out = self.model(out)
