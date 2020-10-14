@@ -154,7 +154,7 @@ class Discriminator(nn.Module):
 			return block
 
 		self.model = nn.Sequential(
-			*discriminator_block(1, 64),
+			*discriminator_block(opt.channels, 64),
 			*discriminator_block(64, 64),
 			*discriminator_block(64, 64),
 			*discriminator_block(64, 64),
@@ -171,7 +171,8 @@ class Discriminator(nn.Module):
 	def forward(self, base, associate):
 		print (base.shape, associate.shape)
 		out = torch.cat([base, associate], dim=-1)
-		out = out[:, None, :]
+		if opt.channels == 1:
+			out = out[:, None, :]
 		print (out.shape)
 		out = self.model(out)
 		print (out.shape)
