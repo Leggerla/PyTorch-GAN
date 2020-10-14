@@ -111,13 +111,12 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 		
-		last_pad = 1 if opt.channels == 1 else 0
-		
-		def generator_block(in_filters, out_filters, kernel_size=(2, 5), padding=(2, 2, last_pad, 0)):
+		def generator_block(in_filters, out_filters, kernel_size=(2, 5), padding=(2, 2, 1, 0)):
 			block = [nn.ZeroPad2d(padding), nn.Conv2d(in_filters, out_filters, kernel_size=kernel_size),
 				 nn.BatchNorm2d(out_filters),nn.LeakyReLU(0.2, inplace=True)]
 			return block
 
+		last_pad = 1 if opt.channels == 1 else 0
 		self.model = nn.Sequential(
 			*generator_block(1, 512),
 			*generator_block(512, 256),
