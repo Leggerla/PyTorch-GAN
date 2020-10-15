@@ -137,15 +137,11 @@ class Generator(nn.Module):
 			base = base[:, None, :]
 		out = torch.cat([base, z], dim=1)
 		out = out[:, None]
-		print (out.shape)
 		out = self.model(out)
-		print (out.shape)
 		out = torch.squeeze(out)
-		print (out.shape)
 		if opt.OHLC == True:
 			out = self.linear(out)
 		out = self.Tanh(out)
-		print (out.shape)
 		return out
 
 
