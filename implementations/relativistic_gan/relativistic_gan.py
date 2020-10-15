@@ -242,9 +242,6 @@ for epoch in range(opt.n_epochs):
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
-		
-		print (real_base.shape, real_associate.shape)
-		print (real_base.shape, gen_associate.shape)
 
 		real_pred = discriminator(real_base, real_associate).detach()
 		fake_pred = discriminator(real_base, gen_associate)
