@@ -289,8 +289,8 @@ for epoch in range(opt.n_epochs):
 			optimizer_D.zero_grad()
 
 			# Predict validity
-			real_pred = discriminator(real_base[:, 3::4], real_associate)
-			fake_pred = discriminator(real_base[:, 3::4], gen_associate.detach())
+			real_pred = discriminator(real_base, real_associate)
+			fake_pred = discriminator(real_base, gen_associate.detach())
 
 			'''if opt.rel_avg_gan:
 			    real_loss = adversarial_loss(real_pred - fake_pred.mean(0, keepdim=True), valid)
