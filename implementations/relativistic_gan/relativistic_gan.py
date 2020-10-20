@@ -92,7 +92,6 @@ class StockDataset(torch.utils.data.Dataset):
 			if not opt.OHLC:
 				if opt.channels > 1:
 					base.append(torch.cat([start_points[i].unsqueeze(0).repeat(1, opt.channels), self.base_timeseries[i:i + window]], dim=0))
-					print (base[0].shape)
 				else:
 					base.append(torch.cat([start_points[i].unsqueeze(0), self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
@@ -104,8 +103,6 @@ class StockDataset(torch.utils.data.Dataset):
 			roll = 4*(roll+1)
 			for i in torch.arange(0, enum, step=roll):
 				base.append(torch.cat([start_points[i//4].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
-				
-		print (torch.stack(base).shape)
 				
 		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open), torch.stack(indices)
 
@@ -244,7 +241,6 @@ for epoch in range(opt.n_epochs):
 			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.channels, opt.vector_size))))
 
 		# Generate a batch of images
-		print (real_base.shape, z.shape)
 		gen_associate = generator(real_base, z)
 
 		real_pred = discriminator(real_base, real_associate).detach()
