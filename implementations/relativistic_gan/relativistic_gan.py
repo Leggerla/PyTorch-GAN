@@ -91,7 +91,9 @@ class StockDataset(torch.utils.data.Dataset):
 				break	
 			if not opt.OHLC:
 				if opt.channels > 1:
+					print (start_points.shape)
 					base.append(torch.cat([start_points[i].unsqueeze(0).repeat(1, opt.channels), self.base_timeseries[i:i + window]], dim=0))
+					print (base[0].shape)
 				else:
 					base.append(torch.cat([start_points[i].unsqueeze(0), self.base_timeseries[i:i + window]], dim=0))
 			associate.append(self.associate_timeseries[i:i + window+1])
