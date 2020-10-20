@@ -241,6 +241,7 @@ for epoch in range(opt.n_epochs):
 			z = Variable(Tensor(np.random.normal(0, 1, (base.shape[0], opt.channels, opt.vector_size))))
 
 		# Generate a batch of images
+		print (real_base.shape, z.shape)
 		gen_associate = generator(real_base, z)
 
 		real_pred = discriminator(real_base, real_associate).detach()
