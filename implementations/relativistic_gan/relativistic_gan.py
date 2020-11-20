@@ -111,7 +111,7 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 		
-		def generator_block(in_filters, out_filters, kernel_size=(2, 5), padding=(2, 2, 1, 0)):
+		def generator_block(in_filters, out_filters, kernel_size=(2, 5), padding=(2, 2, 1, 0), groups=in_filters):
 			block = [nn.ZeroPad2d(padding), nn.Conv2d(in_filters, out_filters, kernel_size=kernel_size),
 				 nn.BatchNorm2d(out_filters),nn.LeakyReLU(0.2, inplace=True)]
 			return block
