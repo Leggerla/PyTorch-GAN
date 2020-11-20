@@ -263,12 +263,12 @@ for epoch in range(opt.n_epochs):
 		# Loss measures generator's ability to fool the discriminator
 		#g_loss = adversarial_loss(discriminator(real_base, gen_associate), valid)
 		
-		if g_loss.item() < best_loss:
-			best_loss = g_loss.item()
+		if g_loss.item() < last_loss:
 			torch.save(real_associate.data, "charts/best_loss_real.pt")
 			torch.save(gen_associate.data, "charts/best_loss_gen.pt")
 			torch.save(generator.state_dict(), "best_loss_generator.pt")
 			torch.save(discriminator.state_dict(), "best_loss_discriminator.pt")
+		last_loss = g_loss.item()
 			
 		g_loss.backward()
 		optimizer_G.step()
