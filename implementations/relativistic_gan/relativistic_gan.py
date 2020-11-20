@@ -211,7 +211,7 @@ best_autocorrelation = -float('inf')
 best_similarity = -float('inf')
 best_corr_dist = float('inf')
 best_list = []
-best_loss = float('inf')
+last_loss = float('inf')
 for epoch in range(opt.n_epochs):
 	sum_d_real_loss = []
 	sum_d_fake_loss = []
