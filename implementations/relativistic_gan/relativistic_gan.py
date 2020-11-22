@@ -83,9 +83,8 @@ class StockDataset(torch.utils.data.Dataset):
 		spy = []
 		vix_open = []
 		indices = []
-		print (torch.tensor(self.associate_timeseries).shape)
-		max = torch.max(self.associate_timeseries)
-		min = torch.min(self.associate_timeseries)
+		max = torch.max(self.associate_timeseries, dim=0)
+		min = torch.min(self.associate_timeseries, dim=0)
 		print (min, max)
 		enum = self.associate_timeseries.shape[0]
 		for i in torch.arange(0, enum, step=roll):
