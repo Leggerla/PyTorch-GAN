@@ -105,6 +105,8 @@ class StockDataset(torch.utils.data.Dataset):
 			for i in torch.arange(0, enum, step=roll):
 				base.append(torch.cat([start_points[i//4].unsqueeze(0) , self.base_timeseries[i:i + window]], dim=0))
 				
+		print (torch.stack(base).shape, torch.stack(associate).shape)
+				
 		return torch.stack(base), 2 * (torch.stack(associate) - min + 1e-8) / (max - min + 1e-8) - 1, torch.stack(spy), torch.stack(vix_open), torch.stack(indices)
 
 
@@ -221,6 +223,7 @@ for epoch in range(opt.n_epochs):
 	for i, (base, associate, spy, start_points, indices) in enumerate(dataloader):
 
 		base, associate = base.to(device), associate.to(device)
+		print (base.shape, associate.shape)
 		# Adversarial ground truths
 		valid = Variable(Tensor(associate.shape[0], 1).fill_(1.0), requires_grad=False)
 		fake = Variable(Tensor(associate.shape[0], 1).fill_(0.0), requires_grad=False)
@@ -243,6 +246,9 @@ for epoch in range(opt.n_epochs):
 
 		# Generate a batch of images
 		gen_associate = generator(real_base, z)
+		print (real_base.shape, z.shape)
+		print (real_base.shape, real_associate.shape)
+		print (real_base.shape, gen_associate.shape)
 
 		real_pred = discriminator(real_base, real_associate).detach()
 		fake_pred = discriminator(real_base, gen_associate)
