@@ -136,10 +136,10 @@ class Generator(nn.Module):
 		self.Tanh = nn.Tanh()
 
 	def forward(self, base, z):
-		print (base.shape, x.shape)
+		print (base.shape, z.shape)
 		if opt.channels == 1:
 			base = base[:, None, :]
-		print (base.shape, x.shape)
+		print (base.shape, z.shape)
 		out = torch.cat([base, z], dim=1)
 		print (out.shape)
 		out = out[:, None]
