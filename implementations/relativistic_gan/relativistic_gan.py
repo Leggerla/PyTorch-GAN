@@ -136,15 +136,23 @@ class Generator(nn.Module):
 		self.Tanh = nn.Tanh()
 
 	def forward(self, base, z):
+		print (base.shape, x.shape)
 		if opt.channels == 1:
 			base = base[:, None, :]
+		print (base.shape, x.shape)
 		out = torch.cat([base, z], dim=1)
+		print (out.shape)
 		out = out[:, None]
+		print (out.shape)
 		out = self.model(out)
+		print (out.shape)
 		out = torch.squeeze(out)
+		print ('after squiz', out.shape)
 		if opt.OHLC == True:
 			out = self.linear(out)
+		print (out.shape)
 		out = self.Tanh(out)
+		print (out.shape)
 		return out
 
 
