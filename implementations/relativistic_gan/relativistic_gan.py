@@ -119,7 +119,7 @@ class Generator(nn.Module):
 				 nn.BatchNorm2d(out_filters),nn.LeakyReLU(0.2, inplace=True)]
 			return block
 
-		last_pad = 1 if opt.channels == 1 else 0
+		last_pad = 1 if opt.channels % 2 == 1 else 0
 		self.model = nn.Sequential(
 			*generator_block(1, 512),
 			*generator_block(512, 256),
